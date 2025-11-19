@@ -1,0 +1,747 @@
+<?php
+if (PHP_SAPI !== 'cli') {
+    echo "This script should only be run from the command line.";
+    exit(1);
+}
+
+$arguments = $argv;
+$route = isset($arguments[1]) ? strtolower($arguments[1]) : '';
+$filename = isset($arguments[2]) ? $arguments[2] : '';
+$extra = isset($arguments[3]) ? $arguments[3] : '';
+$exxr = isset($arguments[4]) ? $arguments[4] : '';
+
+
+function AddAllBaseTable($dbname)
+{
+    $pdo = pdo($dbname);
+    $stmnt = $pdo->prepare("SHOW TABLES");
+    $stmnt->execute();
+    $tables = $stmnt->fetchAll(PDO::FETCH_COLUMN);
+
+    foreach ($tables as $filename) {
+        $newname  = ucfirst($filename);
+        $phpFile = "_backend/base/" . ucfirst($newname) . ".php";
+
+        $phpContent = <<<EOT
+    <?php 
+    namespace Tables;
+    use Classes\BaseTable;
+
+    class $newname extends BaseTable {
+        
+        protected \$table = "$filename";
+
+        protected \$fillable = [];
+
+        protected \$guarded = [];
+
+        protected \$hidden = [];
+
+        protected \$timestamps = false;
+    }
+    ?>
+    EOT;
+
+        if (file_exists($phpFile)) {
+            echo "✔️ Base file already created: $phpFile\n";
+            continue;
+        } else {
+            if (file_put_contents($phpFile, $phpContent) !== false) {
+                echo "✔️ Base file created successfully: $phpFile\n";
+            } else {
+                continue;
+            }
+        }
+    }
+}
+
+if ($route == "+functionpage") {
+    $phpFile = "_frontend/functions/.gitkeep";
+    $phpContent = "";
+    if (file_exists($phpFile)) {
+        echo "❌ File already exists. Please choose a different name.\n";
+        exit(1);
+    } else {
+        $directory = dirname($phpFile);
+
+        if (!is_dir($directory)) {
+            if (!mkdir($directory, 0777, true)) {
+                die("Failed to create directories: $directory");
+            }
+        }
+        if (file_put_contents($phpFile, $phpContent) !== false) {
+            echo "✔️ functions folder created: $phpFile\n";
+            exit(0);
+        } else {
+            echo "❌ Failed to create functions folder.\n";
+            exit(1);
+        }
+    }
+}
+
+if ($route == "enable" || $route == "activate") {
+    if ($filename == "storage") {
+        $realpath = realpath(__DIR__ . "/../..");
+        $dir = $realpath . "/_frontend/core/partials/system/storage/";
+        if (! is_dir($dir)) {
+            $creating = @mkdir($dir, 0777, true);
+            file_put_contents($realpath . "/_frontend/core/partials/system/.gitkeep", "");
+            file_put_contents($realpath . "/_frontend/core/partials/system/.gitignore", "storage/*");
+            echo "✔️ Storage enabled\n\n";
+            exit;
+        }
+        file_put_contents($realpath . "/_frontend/core/partials/system/.gitkeep", "");
+        file_put_contents($realpath . "/_frontend/core/partials/system/.gitignore", "storage/*");
+        echo "🔃 Storage already enabled\n\n";
+        exit;
+    } else {
+        echo "❌ Please specify what to enable";
+        exit;
+    }
+}
+
+if ($route == "deployment" || $route == "deploy") {
+    $realpath = realpath(__DIR__ . "/../..");
+    if ($filename == "--ready") {
+        file_put_contents($realpath . "/.gitignore", ".env");
+        echo "✔️ Deployment ready\n\n";exit;
+    } else if ($filename == "--reset") {
+        unlink($realpath . "/.gitignore");
+        echo "✔️ Deployment reset\n\n";exit;
+    } else {
+        echo "❌ Invalid deployment parameter\n\n";
+    }
+}
+
+if ($route == "run" || $route == "serve" || $route == "start") {
+    include "_frontend/core/partials/loadenv.php";
+    $host = getenv("rootpath");
+    $exp = explode("//", $host);
+    $runner = $exp[1];
+
+    $portExp = explode(":", $runner);
+    $h = $portExp[0];
+    $p = $portExp[1];
+
+    if ($host == null) {
+        echo "❌ ERROR: 'rootpath' has no value (.env file)\n";
+        echo "💡 You can use: http://localhost:9999 as rootpath\n\n";
+        exit;
+    }
+
+    if ($filename == "mobile" || $filename == "public") {
+        $host = getenv("rootpath");
+        $root = realpath(__DIR__ . '/../../');
+        $cmd = "php -S 0.0.0.0:$p -t $root";
+        echo "\n⚡⚡ CodeTazer Framework by CodeYRO⚡⚡\n\n";
+        echo "🌐 public ip @ " . "\033[41m$host\033[0m\n" . "\n";
+        echo "--You can stop server by CTRL+C on your console\n\n";
+        passthru($cmd);
+        exit;
+    }
+
+    $dir = getenv("main_dir");
+    $dir_msg = "";
+    $dir_comm = "";
+    if ($dir != null) {
+        $dir = realpath(__DIR__ . '/../../');
+
+        if (!is_dir($dir)) {
+            echo "❌ Directory $dir does not exist.\n";
+            exit(1);
+        }
+        $dir_comm = " -t \"$dir\"";
+        $dir_msg = "📁 Document root: $dir\n";
+    }
+
+    $fwork = "CodeTazer Framework by CodeYRO";
+    echo "\n⚡⚡ \033[1m$fwork\033[0m⚡⚡\n\n";
+    echo "🔄 Serving at " . "\033[1;33m$host\033[0m\n" . "\n";
+    echo "🔗 Front-End:  " . "\033[32m$host?page=\033[0m\n";
+    echo "🔗 Back-End:  " . "\033[32m$host?be=\033[0m\n";
+    echo $dir_msg;
+    echo "--You can stop server by CTRL+C on your console\n\n";
+
+
+    $phpPath = PHP_BINARY;
+
+    $cmd = "php -S $runner" . $dir_comm;
+    passthru($cmd);
+    exit;
+}
+
+if ($route == "update") {
+    if ($filename == "classes") {
+        function deleteFolder($dir)
+        {
+            if (!file_exists($dir)) return true;
+            if (!is_dir($dir)) return unlink($dir);
+
+            foreach (scandir($dir) as $item) {
+                if ($item == '.' || $item == '..') continue;
+                if (!deleteFolder($dir . DIRECTORY_SEPARATOR . $item)) return false;
+            }
+            return rmdir($dir);
+        }
+
+        function downloadFolder($apiUrl, $targetDir)
+        {
+            $opts = [
+                "http" => [
+                    "header" => "User-Agent: PHP\r\n"
+                ]
+            ];
+            $context = stream_context_create($opts);
+            $response = file_get_contents($apiUrl, false, $context);
+
+            if ($response === FALSE) {
+                echo "❌ Error fetching $apiUrl";
+                exit;
+            }
+
+            $items = json_decode($response, true);
+            if (!is_array($items)) {
+                echo "❌ Invalid API response";
+                exit;
+            }
+
+            @mkdir($targetDir, 0777, true);
+
+            echo "\n\n⚡CodeTazer⚡\n\n";
+            echo "Updating classes....\n\n";
+            $sz = sizeof($items);
+            $ct = 1;
+            foreach ($items as $item) {
+                $localPath = $targetDir . "/" . $item['name'];
+                $p = $ct / $sz;
+                $p = intval($p * 100);
+
+
+                if ($item['type'] === 'file') {
+                    echo "⬇️  $p%  Downloading file: {$item['path']}\n";
+                    $content = file_get_contents($item['download_url']);
+                    file_put_contents($localPath, $content);
+                } elseif ($item['type'] === 'dir') {
+                    downloadFolder($item['url'], $localPath);
+                }
+                $ct += 1;
+            }
+        }
+
+        $root = realpath(__DIR__ . '/../../');
+        $targetDir = $root . "/_backend/core/partials/classes";
+        $apiUrl = "https://api.github.com/repos/YroDevGit/CodeTazer/contents/_backend/core/partials/classes?ref=main";
+
+        deleteFolder($targetDir);
+
+        downloadFolder($apiUrl, $targetDir);
+
+        echo "\n";
+        echo "🎉 CodeTazer App Classes updated!\n\n";
+        exit;
+    } else if ($filename == "file") {
+        $updt = "";
+        if ($extra == "") {
+            echo "❌ Please enter the file relative path to update\n";
+            exit;
+        }
+
+        $root = realpath(__DIR__ . '/../../');
+        $targetFile = $root . DIRECTORY_SEPARATOR . $extra;
+        $rawUrl = "https://raw.githubusercontent.com/YroDevGit/CodeTazer/main/" . str_replace('\\', '/', $extra);
+
+        if ($extra == "index.php") {
+            $targetFile = $root . DIRECTORY_SEPARATOR . "index.php";
+            $rawUrl = "https://raw.githubusercontent.com/YroDevGit/CodeTazer/main/index.php";
+        }
+        if ($extra == "command") {
+            $targetFile = $root . DIRECTORY_SEPARATOR . "_backend\core\command";
+            $rawUrl = "https://raw.githubusercontent.com/YroDevGit/CodeTazer/main/_backend/core/command";
+        }
+
+        if (!file_exists($targetFile)) {
+            if ($exxr === "--mkdir") {
+                $updt = "✅ $targetFile is created!\n\n";
+                @mkdir(dirname($targetFile), 0777, true);
+                if (file_put_contents($targetFile, "...") === false) {
+                    echo "❌ Failed to create $targetFile\n";
+                    exit;
+                }
+                echo "📂 Directory created and placeholder file added: $targetFile\n";
+            } else {
+                echo "❌ File $targetFile does not exist (use --mkdir to create it)\n";
+                exit;
+            }
+        } else {
+            if (!is_file($targetFile)) {
+                echo "❌ $targetFile is a directory, not a file\n";
+                exit;
+            }
+            echo "🔃 Updating $targetFile.....\n";
+        }
+
+        echo "🔃 Fetching new content from CodeTazer.....\n";
+
+        $content = file_get_contents($rawUrl);
+        if ($content === false) {
+            echo "❌ Failed to fetch content from $rawUrl\n";
+            exit;
+        }
+
+        echo "🔃 Almost done.....\n";
+        @mkdir(dirname($targetFile), 0777, true);
+
+        if (file_put_contents($targetFile, $content) === false) {
+            echo "❌ Failed to write $targetFile\n";
+            exit;
+        }
+
+        if ($updt) {
+            echo $updt;
+            exit;
+        }
+        echo "✅ $targetFile is now updated!\n\n";
+        exit;
+    } else {
+        echo "❌ Invalid update parameter.";
+        exit;
+    }
+}
+
+if ($route == "dbmigrate" || $route == "dbimport" || $route == "db_import") {
+    include "_frontend/core/partials/loadenv.php";
+    $dbname = getenv("database");
+    if (! $dbname) {
+        echo "❌ No Database found @ .env";
+        exit;
+    }
+
+    if ($filename == "") {
+        echo "❌ Please filename for migration.\n";
+        exit(1);
+    }
+
+    include "_backend/core/partials/be.php";
+    include "_backend/core/partials/classes/Migration.php";
+
+    $migFile = $filename;
+    if (! file_exists("_backend/core/database/$migFile.php")) {
+        echo "❌ Invalid migration name\n";
+        exit;
+    }
+    include "_backend/core/database/$migFile.php";
+    if ($extra) {
+        if ($extra == "--auto" || $extra == "--reflect" || $extra == "--sync") {
+            echo "\n\n";
+            echo "Auto sync base table, please wait....";
+            echo "\n\n";
+            AddAllBaseTable($dbname);
+            echo "\n-------\n\n";
+            echo "✔️ Done\n";
+        } else {
+            echo "\n\n";
+            echo "❌ Invalid -- command\n";
+            echo "Auto sync table failed\n";
+            echo "Try: php ctr +basetable *\n\n";
+        }
+    }
+    exit;
+}
+
+if ($route == "dbload") {
+    include "_frontend/core/partials/loadenv.php";
+    $dbname = getenv("database");
+    if ($dbname == null || $dbname == "") {
+        echo "❌ database not found @ .env file\n";
+        exit;
+    }
+    include "_backend/core/partials/be.php";
+    try {
+        $pdo = pdo($dbname, true);
+        $stmnt = $pdo->prepare("Create database `$dbname`;");
+        $stmnt->execute();
+        $rowcount = $stmnt->rowCount();
+        echo "✔️ Database $dbname created";
+        exit;
+    } catch (PDOException $e) {
+        echo "❌ " . $e->getMessage();
+        exit;
+    }
+}
+
+if ($route == "+dbtable") {
+    if ($filename == "") {
+        echo "❌ Please provide a table name.\n";
+        exit(1);
+    }
+    include "_frontend/core/partials/loadenv.php";
+    $dbname = getenv("database");
+    if ($dbname == null || $dbname == "") {
+        echo "❌ database not found @ .env file\n";
+        exit;
+    }
+    include "_backend/core/partials/be.php";
+    try {
+        $pdo = pdo($dbname);
+        $stmnt = $pdo->prepare("Create table `$filename` (id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ");
+        $stmnt->execute();
+        $row = $stmnt->rowCount();
+        echo "✔️ Table $filename created";
+        exit;
+    } catch (PDOException $e) {
+        echo "❌ " . $e->getMessage();
+        exit;
+    }
+}
+
+if ($route == "+base" || $route == "+base_table" || $route == "+basetable") {
+    include "_frontend/core/partials/loadenv.php";
+    $dbname = getenv("database");
+
+    if ($filename == "") {
+        echo "❌ Please provide a filename for the base.\n";
+        exit(1);
+    }
+    if (!$dbname) {
+        echo "❌ No database found @ .env\n";
+        exit;
+    }
+    if ($filename == "*") {
+        include "_backend/core/partials/be.php";
+        AddAllBaseTable($dbname);
+        exit;
+    }
+    $newname = ucfirst($filename);
+    $phpFile = "_backend/base/" . ucfirst($newname) . ".php";
+
+    $phpContent = <<<EOT
+    <?php 
+        namespace Tables;
+        use Classes\BaseTable;
+
+        class $newname extends BaseTable{
+            
+            protected \$table = "$filename";
+
+            protected \$fillable = [];
+
+            protected \$guarded = [];
+
+            protected \$hidden = [];
+
+            protected \$timestamps = false;
+
+        }
+    ?>
+    EOT;
+
+    if (file_exists($phpFile)) {
+        echo "❌ File already exists. Please choose a different name.\n";
+        exit(1);
+    } else {
+        if (file_put_contents($phpFile, $phpContent) !== false) {
+            echo "✔️ Base file created successfully: $phpFile\n";
+            exit(0);
+        } else {
+            echo "❌ Failed to create Base file.\n";
+            exit(1);
+        }
+    }
+}
+
+if ($route == "+class") {
+    if ($filename == "") {
+        echo "❌ Please provide a filename for the class.\n";
+        exit(1);
+    }
+    $newname = ucfirst($filename);
+    $phpFile = "_backend/core/partials/classes/" . ucfirst($newname) . ".php";
+
+    $phpContent = <<<EOT
+    <?php
+    namespace Classes;
+
+    class $newname{
+
+        //create a function here...
+
+    }
+    ?>
+    EOT;
+
+    if (file_exists($phpFile)) {
+        echo "❌ File already exists. Please choose a different name.\n";
+        exit(1);
+    } else {
+        if (file_put_contents($phpFile, $phpContent) !== false) {
+            echo "✔️ Class file created successfully: $phpFile\n";
+            exit(0);
+        } else {
+            echo "❌ Failed to create Class file.\n";
+            exit(1);
+        }
+    }
+}
+
+if ($route == "+library") {
+    if ($filename == "") {
+        echo "❌ Please provide a filename for the library.\n";
+        exit(1);
+    }
+    $newname = ucfirst($filename);
+    $phpFile = "_backend/core/library/" . ucfirst($newname) . ".php";
+
+    $phpContent = <<<EOT
+    <?php
+    namespace Library;
+
+    
+    class $newname{
+
+        //create a function here...
+
+    }
+    ?>
+    EOT;
+
+    if (file_exists($phpFile)) {
+        echo "❌ File already exists. Please choose a different name.\n";
+        exit(1);
+    } else {
+        if (file_put_contents($phpFile, $phpContent) !== false) {
+            echo "✔️ Library file created successfully: $phpFile\n";
+            exit(0);
+        } else {
+            echo "❌ Failed to create Library file.\n";
+            exit(1);
+        }
+    }
+}
+
+
+if ($route == "+middleware") {
+    if ($filename == "") {
+        echo "❌ Please provide a filename for the library.\n";
+        exit(1);
+    }
+    $newname = $filename;
+    $phpFile = "_backend/middleware/" . $newname . ".php";
+
+    $phpContent = <<<EOT
+    <?php
+    
+    //Use this as:  use_middleware('$newname');
+
+
+
+
+
+
+
+
+    ?>
+    EOT;
+
+    if (file_exists($phpFile)) {
+        echo "❌ File already exists. Please choose a different name.\n";
+        exit(1);
+    } else {
+        if (file_put_contents($phpFile, $phpContent) !== false) {
+            echo "✔️ Middleware file created successfully: $phpFile\n";
+            exit(0);
+        } else {
+            echo "❌ Failed to create Middleware file.\n";
+            exit(1);
+        }
+    }
+}
+
+if ($route == "+model") {
+    if ($filename == "") {
+        echo "❌ Please provide a filename for the model.\n";
+        exit(1);
+    }
+    $newname = ucfirst($filename);
+    $phpFile = "_backend/model/" . ucfirst($newname) . ".php";
+
+    $phpContent = <<<EOT
+    <?php 
+    namespace Models;
+
+
+    class $newname{
+        
+        public function __construct() {
+            // Constructor code here
+            // You can initialize properties or perform setup tasks
+        }
+
+
+        static function test(){
+            echo 'Hello CodeTazer user. This is model file';
+        }
+
+    
+
+    }
+    ?>
+    EOT;
+
+    if (file_exists($phpFile)) {
+        echo "❌ File already exists. Please choose a different name.\n";
+        exit(1);
+    } else {
+        if (file_put_contents($phpFile, $phpContent) !== false) {
+            echo "✔️ Model file created successfully: $phpFile\n";
+            exit(0);
+        } else {
+            echo "❌ Failed to create model file.\n";
+            exit(1);
+        }
+    }
+} else if ($route == "+route" || $route == "+routes" || $route == "+r" || $route == "+backend") {
+    if ($filename == "") {
+        echo "❌ Please provide a filename for the controller.\n";
+        exit(1);
+    }
+    if (! str_contains($filename, "/")) {
+        echo "❌ Please provide a valid route name, Example: admin/add.\n";
+        exit(1);
+    }
+    $newname = ucfirst($filename);
+    $exp = explode("/", $filename);
+    $fdr = $exp[0];
+    $fls = $exp[1];
+    if (!$fdr || !$fls) {
+        echo "❌ Invalid file format";
+        exit;
+    }
+    $exp1 = explode(",", $fls);
+    $filename = "";
+    $counter = 0;
+    echo "\n";
+    foreach ($exp1 as $ee) {
+        $filename = $fdr . "/" . $ee;
+        $phpFile = "_backend/_routes/" . $filename . ".php";
+
+        $phpContent = <<<EOT
+    <?php //route: $filename
+
+    //Add codes here...
+
+
+
+
+
+    
+
+
+    
+
+
+    ?>
+    EOT;
+
+        if (file_exists($phpFile)) {
+            echo "✔️ Route file [$filename] already created @ $phpFile.\n";
+        } else {
+            $directory = dirname($phpFile);
+
+            if (!is_dir($directory)) {
+                if (!mkdir($directory, 0777, true)) {
+                    echo "Failed to create directories: $directory";
+                    exit;
+                }
+            }
+
+            if (file_put_contents($phpFile, $phpContent) !== false) {
+                echo "✔️ Route file [$filename] created successfully @ $phpFile.\n";
+            } else {
+                echo "❌ Failed to create Route file.\n";
+            }
+        }
+        $counter += 1;
+    }
+    echo "\n";
+    exit;
+} else if ($route == "what") {
+    if ($filename == "") {
+        echo "❌ parameter not found for (what) command.\n";
+        exit(1);
+    }
+    if ($filename == "frontend" || $filename == "backend") {
+        include "_frontend/core/partials/loadenv.php";
+        $hostserver = null;
+        $ext = "";
+        if (getenv("rootpath") == null || getenv("rootpath") == "") {
+            $ext = basename(realpath(__DIR__ . '/../..'));
+            $hostserver = "http://localhost/$ext";
+        } else {
+            $hostserver = getenv("rootpath");
+        }
+        if ($filename == "frontend") {
+            echo "🔗 Front-End URL:  " . "\033[32m$hostserver?page=\033[0m\n";
+            exit;
+        }
+        if ($filename == "backend") {
+            echo "🔗 Back-End URL:  " . "\033[32m$hostserver?be=\033[0m\n";
+            exit;
+        }
+    }
+    if ($filename == "db" || $filename == "database") {
+        include "_frontend/core/partials/loadenv.php";
+        echo getenv("database") == null ? "❌ No database yet" : "🗃️  Your Database:  " . getenv("database");
+        exit;
+    }
+} else if ($route == "author") {
+    echo "\n";
+    echo "⚡CodeTazer⚡\n\n";
+    echo "💻 by: \033[32mTyrone Limen Malocon\033[0m\n\n";
+    echo "FB@: Tyrone Lee Emz\n";
+    echo "Negros Occidental, Philippines\n";
+    echo "tyronemalocon@gmail.com";
+    echo "\n\n";
+} else if ($route == "routes" || $route == "get_routes") {
+    echo "\n";
+    $projectRoot = realpath(__DIR__ . "/../..");
+    $path = $projectRoot . "/_backend/_routes";
+    if (!is_dir($path)) {
+        die("❌ Directory not found: " . $path);
+    }
+
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path)
+    );
+
+    foreach ($iterator as $file) {
+        if ($file->isFile()) {
+            $bee = str_replace($path . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $bee = str_replace('\\', "/", $bee);
+            if (substr($bee, -4) == '.php') {
+                $bax = substr($bee, 0, -4);
+                echo $bax . "\n";
+                continue;
+            }
+            echo $bee . "\n";
+        }
+    }
+    echo "\n";
+    exit;
+} else if ($route == "clear") {
+    if ($filename == "browser") {
+        include "./_backend/core/storage.php";
+        if ($extra) {
+            clearBrowserStorage($extra);
+            exit;
+        } else {
+            echo "❌ Please specify what browser storage to clear";
+            exit;
+        }
+    } else {
+        echo "❌ Invalid clear command";
+        exit;
+    }
+} else {
+    echo "Invalid command.\n";
+    exit(1);
+}
