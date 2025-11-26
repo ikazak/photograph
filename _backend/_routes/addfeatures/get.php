@@ -6,9 +6,9 @@
 
 use Classes\Request;
 use Classes\Response;
-use Tables\Additionalfeatures;
+use Tables\Customizationpackage;
 
-$additionalfeatures = Additionalfeatures::getAll(["available"=>1]);
+$additionalfeatures = Customizationpackage::getAll(["available"=>1, "category" =>"feat"]);
 
 Response::code(200)->data($additionalfeatures)->send();
 

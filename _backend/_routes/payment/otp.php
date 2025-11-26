@@ -24,8 +24,8 @@ if(! $amount){
 }
 
 $post = Tyrux::post([
-    "url" => "http://gcash.alwaysdata.net/?be=transaction/prepay",
-    "headers" => ["apikey"=>"yt763d435436fcfgcv3654v"],
+    "url" => "http://gcashaapp.alwaysdata.net/?be=transaction/prepay",
+    "headers" => ["apikey"=>"codetazer"],
     "data" => ["phone"=>$phone,"amount"=>$amount,"merchant"=>"PHOTOGRAPHER"]
 ]);
 

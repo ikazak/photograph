@@ -4,7 +4,7 @@
 
 use Classes\Request;
 use Classes\Response;
-use Tables\Coverage;
+use Tables\Customizationpackage;
 
 $covname = Request::post("covname");
 $price = Request::post("price");
@@ -22,11 +22,12 @@ if(!$description){
 }
 
 
-$insert = Coverage::insert([
-    "covname" => $covname,
+$insert = Customizationpackage::insert([
+    "name" => $covname,
     "price" => $price,
     "description" => $description,
-    "available" => "1"
+    "available" => "1",
+    "category" => "cov"
 ]);
 
 Response::code(200)->message("Data Added Successfully")->send();

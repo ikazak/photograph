@@ -5,7 +5,7 @@
 
 use Classes\Request;
 use Classes\Response;
-use Tables\Preeventsession;
+use Tables\Customizationpackage;
 
 $prename = Request::post("prename");
 $preprice = Request::post("preprice");
@@ -23,11 +23,12 @@ if(!$predescription){
 }
 
 
-$insert = Preeventsession::insert([
-    "prename" => $prename,
-    "preprice" => $preprice,
-    "predescription" => $predescription,
-    "available" => "1"
+$insert = Customizationpackage::insert([
+    "name" => $prename,
+    "price" => $preprice,
+    "description" => $predescription,
+    "available" => "1",
+    "category" => "pre"
 ]);
 
 Response::code(200)->message("Data Added Successfully")->send();

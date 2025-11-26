@@ -26,8 +26,8 @@ if (! $otp) {
 }
 
 $post = Tyrux::post([
-    "url" => "http://gcash.alwaysdata.net/?be=transaction/prepay?ptype=postpayment",
-    "headers" => ["apikey" => "yt763d435436fcfgcv3654v"],
+    "url" => "http://gcashaapp.alwaysdata.net/?be=transaction/prepay?ptype=postpayment",
+    "headers" => ["apikey" => "codetazer"],
     "data" => [
         "phone" => $phone,
         "amount" => floatval($amount),
@@ -49,3 +49,5 @@ if ($post['code'] != 200) {
 }
 
 Response::code(200)->message("OK")->data($post)->send();
+
+?>

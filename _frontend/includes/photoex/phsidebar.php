@@ -258,12 +258,19 @@
         <div class="navbar-nav w-100">
             <a id="homepage" href="<?= page('photographer/photodashboard.php') ?>" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
             
-            <a href="<?= page('photographer/orders.php') ?>" class="nav-item nav-link">
-                <i class="fa fa-cogs me-2"></i> Order Request
-            </a>
             
-            <a id="homepage" href="<?= page('photographer/Booked.php') ?>" class="nav-item nav-link"><i class="fa fa-check me-2"></i>Booked</a>
             
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-calendar me-2"></i>Appointment</a>
+                <div class="dropdown-menu border-0">
+                    <a href="<?= page('photographer/orders.php') ?>" class="nav-item nav-link"><i class="fa fa-cogs me-2"></i>Request</a>
+                    <a id="homepage" href="<?= page('photographer/Booked.php') ?>" class="nav-item nav-link"><i class="fa fa-check me-2"></i>Booked</a>
+                    <a id="homepage" href="<?= page('photographer/ongoing.php') ?>" class="nav-item nav-link"><i class="fa fa-sign me-2"></i>On Going</a>
+                    <a id="homepage" href="<?= page('photographer/completed.php') ?>" class="nav-item nav-link"><i class="fa fa-circle me-2 text-success"></i>completed</a>
+                </div>
+            </div>
+
+
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-calendar me-2"></i>Calendar</a>
                 <div class="dropdown-menu border-0">

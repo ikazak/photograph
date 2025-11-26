@@ -366,9 +366,7 @@
                             const imageSrc = column.img || "<?= assets('img/placeholder.png') ?>";
 
                             DOM.add_html("#showbirthday", `
-                            <img src="${column.img}" alt="Birthday Photo 1" onclick="openLightbox(this)">
-
-                `);
+                            <img src="${column.img}" alt="Birthday Photo 1" onclick="openLightbox(this)">`);
 
                         });
 
@@ -606,7 +604,7 @@
             tyrax.post({
                 url:"ratings/add",
                 request: review,
-                inspect:true,
+                //inspect:true,
                 response: (send) => {
                 if (send.code == 300) {
                     twal.err({

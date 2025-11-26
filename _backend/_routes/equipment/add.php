@@ -4,7 +4,7 @@
 
 use Classes\Request;
 use Classes\Response;
-use Tables\Equipmentsetup;
+use Tables\Customizationpackage;
 
 $name = Request::post("name");
 $price = Request::post("price");
@@ -22,11 +22,12 @@ if(!$description){
 }
 
 
-$insert = Equipmentsetup::insert([
+$insert = Customizationpackage::insert([
     "name" => $name,
     "price" => $price,
     "description" => $description,
-    "available" => "1"
+    "available" => "1",
+    "category" => "equip"
 ]);
 
 Response::code(200)->message("Data Added Successfully")->send();

@@ -6,6 +6,7 @@ class Response
 {
     protected static $code = 200;
     protected static $data = null;
+    protected static $count = null;
     protected static $details = null;
     protected static $errors = null;
     protected static $message = null;
@@ -205,12 +206,20 @@ class Response
         return new self;
     }
 
+    public static function count(int $data)
+    {
+        $data = is_int($data) ? $data : 0;
+        self::$count = $data;
+        return new self;
+    }
+
     public static function push(int $status = 200): void
     {
         $response = [];
         $details = self::$details;
         $data = self::$data;
         $errors = self::$errors;
+        $count = self::$count;
         $message =  self::$message;
         $code = self::$code;
         $text = self::$text;
@@ -221,6 +230,9 @@ class Response
         }
         if (! is_null($errors)) {
             $response['errors'] = $errors;
+        }
+        if (! is_null($count)) {
+            $response['count'] = $count;
         }
         if (! is_null($details)) {
             $response['details'] = $details;

@@ -67,3 +67,4 @@ Request_order::insert([
 
 
 Response::code(200)->message("data inserted succesfully")->send();
+?>

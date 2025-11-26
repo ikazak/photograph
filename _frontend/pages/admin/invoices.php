@@ -116,7 +116,7 @@ if (!function_exists('assets')) {
                                 <i class="fas fa-search"></i>
                                 <input type="search" id="invoiceSearchInput" placeholder="Search email or contact name">
                             </div>
-                            <a href="#" class="view-templates-link">View Templates</a>
+                            
                             <button class="new-invoice-btn-main" id="openNewInvoiceModalBtn">New Invoice</button>
                         </div>
                     </header>
@@ -145,7 +145,7 @@ if (!function_exists('assets')) {
                     </main>
                     <div id="noInvoicesMessage" style="text-align: center; padding: 20px; display: none;">No invoices match the current filter.</div>
 
-                    <footer class="page-footer"> <span class="pagination-info" id="paginationInfo">0 - 0 of 0</span> <button class="fab"><i class="fas fa-comment-dots"></i></button> </footer>
+                    
                 </div>
             </div>
             <?=include_page('footer_content')?>

@@ -109,16 +109,13 @@
 <?=include_page('landing/foot')?>
 
 </html>
-<?= import_tyrux() ?>
-<?= import_twal() ?>
-<?= import_loading() ?>
 
 <script>
     let basket = [];
 
         function displayAllphotographers(searchTerm = '') {
             //const $container = $('#photographerCardRow');
-            const $noServicesMessage = $('#noServicesMessage');
+            //const $noServicesMessage = $('#noServicesMessage');
 
             tyrax.get({
                 url: "admin/get",

@@ -218,15 +218,8 @@
         twal.ask({
             text: "Do You Want To Login?"
         }).then((result) => {
-            if (twal == "no") {
-                tyrax.post({
-                    response: function(send) {
-                        if (send.code == 200) {
-                            twal.ok({
-                            }).then(() => location.href = "<?=page('loginpage.php')?>");
-                        }
-                    }
-                })
+            if (result.confirm) {
+                location.href = PATH.page("loginpage.php")
             }
         });
     }

@@ -125,8 +125,8 @@
                 data.forEach(column => {
                     DOM.add_html("#card-grid",`
                     <div class="card" data-id="1">
-                        <h3 class="card-name">${column.fname}</h3>
-                        <p class="card-price">₱${column.fprice}</p>
+                        <h3 class="card-name">${column.name}</h3>
+                        <p class="card-price">₱${column.price}</p>
                         <p class="card-description">${column.description}</p>
                         <div class="card-actions">
                             <i class="fas fa-edit edit-icon" title="Edit"></i>

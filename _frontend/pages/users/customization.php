@@ -4,154 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Photography Booking</title>
+    <title>LensCraft - Custom Photography Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #ffffff;
-            color: #1a1a1a;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .floating-price {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, #dc143c 0%, #a00 100%);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(220, 20, 60, 0.4);
-            z-index: 1000;
-            min-width: 200px;
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(100px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .floating-price-label {
-            font-size: 0.9em;
-            opacity: 0.9;
-            margin-bottom: 5px;
-        }
-
-        .floating-price-amount {
-            font-size: 2em;
-            font-weight: bold;
-        }
-
-        header {
-            text-align: center;
-            padding: 40px 0;
-            border-bottom: 4px solid #dc143c;
-            margin-bottom: 40px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            font-size: 2.8em;
-            color: #dc143c;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .subtitle {
-            color: #fff;
-            margin-top: 10px;
-            font-size: 1.1em;
-        }
-
-        .progress-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .progress-line {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: #e0e0e0;
-            z-index: 0;
-        }
-
-        .progress-line-fill {
-            height: 100%;
-            background: #dc143c;
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .progress-step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .progress-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            color: #666;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            font-weight: bold;
-            border: 3px solid #e0e0e0;
-            transition: all 0.3s ease;
-        }
-
-        .progress-step.active .progress-circle {
-            background: #dc143c;
-            color: white;
-            border-color: #dc143c;
-            transform: scale(1.2);
-        }
-
-        .progress-step.completed .progress-circle {
-            background: #1a1a1a;
-            color: white;
-            border-color: #1a1a1a;
-        }
-
-        .progress-label {
-            font-size: 0.85em;
-            color: #666;
-            font-weight: 600;
-        }
-
-        .progress-step.active .progress-label {
-            color: #dc143c;
-            font-weight: bold;
+            font-family: 'Inter', sans-serif;
         }
 
         .step-content {
@@ -160,13 +18,13 @@
 
         .step-content.active {
             display: block;
-            animation: fadeIn 0.5s ease;
+            animation: slideUp 0.4s ease-out;
         }
 
-        @keyframes fadeIn {
+        @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(10px);
             }
 
             to {
@@ -175,958 +33,751 @@
             }
         }
 
-        .card {
-            background: #ffffff;
-            border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            padding: 35px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
+        .selected-card {
+            border-color: #dc143c !important;
+            background-color: #fff5f5 !important;
         }
 
-        .card h2 {
-            color: #1a1a1a;
-            margin-bottom: 25px;
-            font-size: 1.8em;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #dc143c;
+        .selected-card .check-icon {
+            display: flex !important;
         }
 
-        .card p {
-            margin-bottom: 20px;
-        }
-
-        .option-group {
-            display: grid;
-            gap: 15px;
-        }
-
-        .option-item {
-            background: #f9f9f9;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            padding: 18px;
+        /* Range Slider */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #dc143c;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            margin-top: -4px;
         }
 
-        .option-item:hover {
-            border-color: #dc143c;
-            background: #fff5f5;
-            transform: translateX(5px);
-        }
-
-        .option-item.selected {
-            border-color: #dc143c;
-            background: #ffe0e6;
-            box-shadow: 0 3px 10px rgba(220, 20, 60, 0.2);
-        }
-
-        .option-item input[type="radio"],
-        .option-item input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            accent-color: #dc143c;
-            cursor: pointer;
-        }
-
-        .option-details {
-            flex: 1;
-        }
-
-        .option-name {
-            font-weight: bold;
-            color: #1a1a1a;
-            font-size: 1.1em;
-            margin-bottom: 3px;
-        }
-
-        .option-desc {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .option-price {
-            color: #dc143c;
-            font-weight: bold;
-            font-size: 1.3em;
-        }
-
-        .slider-group {
-            margin-bottom: 30px;
-        }
-
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .slider-label label {
-            font-weight: 600;
-            color: #1a1a1a;
-            font-size: 1.05em;
-        }
-
-        .slider-value {
-            color: #dc143c;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-
-        input[type="range"] {
+        input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
             height: 8px;
-            border-radius: 5px;
-            background: #e0e0e0;
-            outline: none;
-            -webkit-appearance: none;
+            cursor: pointer;
+            background: #e5e7eb;
+            border-radius: 4px;
         }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #dc143c;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4);
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #dc143c;
-            cursor: pointer;
+        .bckbtn {
+            height: 40px;
+            width: 150px;
+            background-color: #dc143c;
+            color: white;
+            border-radius: 20px;
             border: none;
-            box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4);
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #1a1a1a;
-            font-weight: 600;
-            font-size: 1em;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="date"],
-        input[type="time"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 14px;
-            background: #f9f9f9;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            color: #1a1a1a;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: #dc143c;
-            background: #fff;
-            box-shadow: 0 0 15px rgba(220, 20, 60, 0.2);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 16px 30px;
-            font-size: 1.1em;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-next {
-            background: #dc143c;
-            color: #fff;
-        }
-
-        .btn-next:hover:not(:disabled) {
-            background: #a00;
-            transform: scale(1.03);
-            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.4);
-        }
-
-        .btn-back {
-            background: #1a1a1a;
-            color: #fff;
-        }
-
-        .btn-back:hover {
-            background: #333;
-            transform: scale(1.03);
-        }
-
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .summary-card {
-            background: #ffffff;
-            border: 3px solid #dc143c;
-            border-radius: 15px;
-            padding: 30px;
-            color: #1a1a1a;
-            box-shadow: 0 8px 30px rgba(220, 20, 60, 0.15);
-        }
-
-        .summary-card h2 {
-            color: #dc143c;
-            border-bottom: 3px solid #dc143c;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 15px 0;
-            border-bottom: 2px solid #f0f0f0;
-            gap: 20px;
-        }
-
-        .summary-item:last-of-type {
-            border-bottom: none;
-        }
-
-        .summary-label {
-            font-weight: 700;
-            color: #1a1a1a;
-            font-size: 1.05em;
-            min-width: 180px;
-        }
-
-        .summary-value {
-            color: #333;
-            font-size: 1em;
-            text-align: right;
-            flex: 1;
-        }
-
-        .summary-total {
-            font-size: 2em;
-            font-weight: bold;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 4px solid #dc143c;
-            color: #dc143c;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .success-message {
-            display: none;
-            background: #e6ffe6;
-            border: 3px solid #00cc00;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            color: #1a1a1a;
-        }
-
-        .success-message.show {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .success-message h2 {
-            color: #00aa00;
-            margin-bottom: 15px;
-            font-size: 2.5em;
-        }
-
-        .success-message p {
-            font-size: 1.1em;
-            margin: 10px 0;
-        }
-
-        .success-message strong {
-            color: #dc143c;
-            font-size: 1.2em;
-        }
-
-        h3 {
-            color: #dc143c;
-            margin-bottom: 15px;
-            margin-top: 30px;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .progress-label {
-                font-size: 0.7em;
-            }
-
-            .floating-price {
-                bottom: 15px;
-                right: 15px;
-                padding: 15px 20px;
-            }
-
-            .floating-price-amount {
-                font-size: 1.5em;
-            }
-
-            .summary-item {
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .summary-label {
-                min-width: auto;
-            }
-
-            .summary-value {
-                text-align: left;
-            }
-        }
-        .backb{
-            height: 30px;
-            width: 100px;
-            background-color: #ff0033ff;
-            border-radius: 30px;
+        .bckbtn:hover {
+            background-color: orangered;
             cursor: pointer;
         }
-        .backb:hover{
-            background-color: wheat;
-        }
-        
     </style>
+    <script type="importmap">
+        {
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
+  }
+}
+</script>
 </head>
 
-<body>
-    <div>
-        <a  href="<?=(page('users/home'))?>"><button  class="backb"><b>Back</b></button></a>
+<body class="bg-gray-50 text-gray-900 pb-24">
+
+    <!-- Global Back Button -->
+    <div class="fixed top-4 left-4 z-50">
+        <button id="global-back" onclick="app.prevStep()" class="hidden flex items-center px-4 py-2 bg-[#dc143c] text-white rounded-full font-bold shadow-lg hover:bg-white hover:text-[#dc143c] border border-transparent hover:border-[#dc143c] transition-all text-sm uppercase">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                <path d="M15 18l-6-6 6-6" />
+            </svg> Back
+        </button>
     </div>
-    <div class="container">
-        <div class="floating-price" id="floating-price">
-            <div class="floating-price-label">Current Total</div>
-            <div class="floating-price-amount">₱0</div>
+
+    <!-- Header -->
+    <header class="bg-[#1a1a1a] text-white py-12 mb-8 shadow-md relative overflow-hidden">
+        <div>
+            <a href="<?= page("users/home") ?>"><button class="bckbtn">Back to Home</button></a>
+        </div>
+        <div class="container mx-auto px-4 text-center relative z-10">
+
+            <h1 class="text-4xl md:text-5xl font-bold text-[#dc143c] mb-3 flex items-center justify-center gap-3">
+                <svg class="w-8 h-8 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                </svg>
+                LensCraft Booking
+            </h1>
+            <p class="text-gray-300 text-lg tracking-wide">Design Your Perfect Photography Experience</p>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 max-w-5xl">
+
+        <!-- Progress Steps -->
+        <div class="mb-10 relative px-4">
+            <div class="absolute top-5 left-0 right-0 h-1 bg-gray-200 z-0 mx-8 md:mx-16 rounded-full"></div>
+            <div id="progress-bar" class="absolute top-5 left-0 h-1 bg-[#dc143c] z-0 mx-8 md:mx-16 rounded-full transition-all duration-500 ease-in-out" style="width: 0%"></div>
+
+            <div class="relative z-10 flex justify-between w-full" id="step-indicators">
+                <!-- Steps generated by JS based on count, or hardcoded below -->
+                <div class="flex flex-col items-center step-indicator" data-step="1">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-[#dc143c] border-[#dc143c] text-white transition-all">1</div>
+                    <span class="mt-2 text-xs font-bold text-[#dc143c]">Photographer</span>
+                </div>
+                <div class="flex flex-col items-center step-indicator" data-step="2">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-white border-gray-300 text-gray-400 transition-all">2</div>
+                    <span class="mt-2 text-xs font-medium text-gray-400">Packages</span>
+                </div>
+                <div class="flex flex-col items-center step-indicator" data-step="3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-white border-gray-300 text-gray-400 transition-all">3</div>
+                    <span class="mt-2 text-xs font-medium text-gray-400">Customize</span>
+                </div>
+                <div class="flex flex-col items-center step-indicator" data-step="4">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-white border-gray-300 text-gray-400 transition-all">4</div>
+                    <span class="mt-2 text-xs font-medium text-gray-400">Features</span>
+                </div>
+                <div class="flex flex-col items-center step-indicator" data-step="5">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-white border-gray-300 text-gray-400 transition-all">5</div>
+                    <span class="mt-2 text-xs font-medium text-gray-400">Details</span>
+                </div>
+                <div class="flex flex-col items-center step-indicator" data-step="6">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-white border-gray-300 text-gray-400 transition-all">6</div>
+                    <span class="mt-2 text-xs font-medium text-gray-400">Review</span>
+                </div>
+            </div>
         </div>
 
-        <header>
-            <h1>📸 Custom Photography Booking</h1>
-            <p class="subtitle">Design Your Perfect Photography Experience</p>
-        </header>
+        <!-- Main Card -->
+        <div class="bg-white rounded-3xl shadow-xl p-6 md:p-10 mb-20 border border-gray-100 min-h-[500px] flex flex-col">
 
-        <div class="progress-bar">
-            <div class="progress-line">
-                <div class="progress-line-fill" id="progress-fill"></div>
-            </div>
-            <div class="progress-step active" data-step="1">
-                <div class="progress-circle">1</div>
-                <div class="progress-label">Package</div>
-            </div>
-            <div class="progress-step" data-step="2">
-                <div class="progress-circle">2</div>
-                <div class="progress-label">Customize</div>
-            </div>
-            <div class="progress-step" data-step="3">
-                <div class="progress-circle">3</div>
-                <div class="progress-label">Features</div>
-            </div>
-            <div class="progress-step" data-step="4">
-                <div class="progress-circle">4</div>
-                <div class="progress-label">Details</div>
-            </div>
-            <div class="progress-step" data-step="5">
-                <div class="progress-circle">5</div>
-                <div class="progress-label">Review</div>
-            </div>
-        </div>
+            <!-- STEP 1: PHOTOGRAPHER -->
+            <div id="step-1" class="step-content active">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Choose Your Artist</h2>
+                <p class="text-gray-600 mb-8">Select the photographer whose style matches your vision.</p>
+
+                <div id="profilephotgrapher" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Photographer 1 -->
 
 
+                    <!-- Photographer 2 -->
 
-        <div class="step-content active" id="step-1">
-            <div class="card">
-                <h2>Step 1: Build Your Custom Package</h2>
-                <p style="color: #666; margin-bottom: 25px;">Select the services you need - choose one or multiple options</p>
 
-                <h3 style="margin-top: 0;">Coverage Type</h3>
-                <div class="option-group" id="card-grid">
-                    
+                    <!-- Photographer 3 -->
 
-        
+
+                    <!-- Photographer 4 -->
+
+                </div>
+            </div>
+
+            <!-- STEP 2: PACKAGES -->
+            <div id="step-2" class="step-content">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Build Your Package</h2>
+                <p class="text-gray-600 mb-8">Select the core services you need.</p>
+
+                <!-- Category: Coverage -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-[#dc143c] uppercase border-b pb-2 mb-4">Coverage</h3>
+                    <div id="coveragestep" class="space-y-3">
+
+
+                    </div>
                 </div>
 
-                <h3 style="margin-top: 30px;">Pre-Event Session (Optional)</h3>
-                <div class="option-group" id="card-preevent">
-                    
+                <!-- Category: Pre-Event -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-[#dc143c] uppercase border-b pb-2 mb-4">Pre-Event</h3>
+                    <div id="preevent" class="space-y-3">
 
-                    
+                    </div>
                 </div>
 
-                <h3 style="margin-top: 30px;">Equipment & Setup</h3>
-                <div class="option-group" id="card-equipment">
+                <!-- Category: Equipment -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-[#dc143c] uppercase border-b pb-2 mb-4">Equipment</h3>
+                    <div id="equipment" class="space-y-3">
 
-                    
+                    </div>
                 </div>
+            </div>
 
-                <div style="background: #fff5f5; border: 2px solid #dc143c; border-radius: 10px; padding: 20px; margin-top: 30px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="font-size: 1.1em; color: #1a1a1a;">Current Package Total:</strong>
-                            <p style="color: #666; font-size: 0.9em; margin-top: 5px;">Select at least one service to continue</p>
+            <!-- STEP 3: CUSTOMIZE -->
+            <div id="step-3" class="step-content">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Fine Tune Details</h2>
+                <p class="text-gray-600 mb-8">Adjust specific quantities.</p>
+
+                <div class="bg-gray-50 p-8 rounded-2xl border border-gray-200 space-y-10">
+                    <div>
+                        <div class="flex justify-between mb-4">
+                            <label class="font-bold text-gray-900">Additional Hours</label>
+                            <span id="display-hours" class="font-bold text-[#dc143c]">No extra hours</span>
                         </div>
-                        <div style="font-size: 2em; font-weight: bold; color: #dc143c;" id="step1-total">₱0</div>
+                        <input type="range" id="input-hours" min="0" max="12" value="0" class="w-full"
+                            oninput="app.updateCustom('hours', this.value, 500, 'extra hours')">
+                        <p class="text-sm text-gray-600 mt-2">₱500 per extra hour</p>
                     </div>
-                </div>
 
-                <div class="btn-group">
-                    <button class="btn btn-next" onclick="nextStep()" id="step1-next" disabled>Next: Customize Package</button>
+                    <div>
+                        <div class="flex justify-between mb-4">
+                            <label class="font-bold text-gray-900">Additional Shooters</label>
+                            <span id="display-photographers" class="font-bold text-[#dc143c]">Standard Crew</span>
+                        </div>
+                        <input type="range" id="input-photographers" min="0" max="4" value="0" class="w-full"
+                            oninput="app.updateCustom('photographers', this.value, 1500, 'shooters')">
+                        <p class="text-sm text-gray-600 mt-2">₱1,500 per additional person</p>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between mb-4">
+                            <label class="font-bold text-gray-900">Extra Edited Photos</label>
+                            <span id="display-photos" class="font-bold text-[#dc143c]">Standard Amount</span>
+                        </div>
+                        <input type="range" id="input-photos" min="0" max="200" step="10" value="0" class="w-full"
+                            oninput="app.updateCustom('photos', this.value, 20, 'photos')">
+                        <p class="text-sm text-gray-600 mt-2">₱20 per extra photo</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="step-content" id="step-2">
-            <div class="card">
-                <h2>Step 2: Customize Your Package (Optional)</h2>
-                <p style="color: #666; margin-bottom: 25px;">Add custom options to enhance your package or skip to the next step</p>
+            <!-- STEP 4: FEATURES -->
+            <div id="step-4" class="step-content">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Additional Features</h2>
+                <p class="text-gray-600 mb-8">Enhance your experience.</p>
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <label>Additional Coverage Hours</label>
-                        <span class="slider-value" id="hours-value">0 extra hours</span>
-                    </div>
-                    <input type="range" id="hours" min="0" max="12" value="0" oninput="updateHours(this.value)">
-                    <p style="color: #888; font-size: 0.9em; margin-top: 5px;">₱500 per extra hour</p>
-                </div>
+                <div id="features" class="space-y-4">
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <label>Additional Photographers/Videographers</label>
-                        <span class="slider-value" id="photographers-value">0 additional</span>
-                    </div>
-                    <input type="range" id="photographers" min="0" max="3" value="0" oninput="updatePhotographers(this.value)">
-                    <p style="color: #888; font-size: 0.9em; margin-top: 5px;">₱1,500 per additional photographer/videographer</p>
-                </div>
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <label>Extra Edited Photos (beyond standard)</label>
-                        <span class="slider-value" id="photos-value">0 extra photos</span>
-                    </div>
-                    <input type="range" id="photos" min="0" max="200" step="10" value="0" oninput="updatePhotos(this.value)">
-                    <p style="color: #888; font-size: 0.9em; margin-top: 5px;">₱20 per extra edited photo</p>
-                </div>
 
-                <div class="btn-group">
-                    <button class="btn btn-back" onclick="previousStep()">Back</button>
-                    <button class="btn btn-next" onclick="nextStep()">Next: Add Features</button>
+
+
                 </div>
             </div>
-        </div>
 
-        <div class="step-content" id="step-3">
-            <div class="card">
-                <h2>Step 3: Additional Features (Optional)</h2>
-                <p style="color: #666; margin-bottom: 25px;">Select add-ons to enhance your package or skip to continue</p>
-                <div class="option-group" id="card-addfeatures">
-                    
+            <!-- STEP 5: DETAILS -->
+            <div id="step-5" class="step-content">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Event Details</h2>
+                <p class="text-gray-600 mb-8">Tell us about your special day.</p>
 
-                    
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-back" onclick="previousStep()">Back</button>
-                    <button class="btn btn-next" onclick="nextStep()">Next: Your Details</button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="col-span-1 md:col-span-2 border-t pt-4">
+                        <h3 class="font-bold text-gray-900 mb-2">Logistics</h3>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Event Type *</label>
+                        <select id="inp-type" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:border-[#dc143c] outline-none">
+                            <option value="">Select type</option>
+                            
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Venue *</label>
+                        <input type="text" id="inp-location" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:border-[#dc143c] outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Date *</label>
+                        <input type="date" id="inp-date" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:border-[#dc143c] outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Time *</label>
+                        <input type="time" id="inp-time" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:border-[#dc143c] outline-none">
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="step-content" id="step-4">
-            <div class="card">
-                <h2>Step 4: Your Information & Schedule</h2>
-                <h3>Session Details</h3>
-                <div class="form-group">
-                    <label>Event Type *</label>
-                    <select id="event-type" required>
-                        <option value="">Select event type</option>
-                        <option value="wedding">Wedding</option>
-                        <option value="birthday">Birthday</option>
-                        <option value="debut">Debut</option>
-                        <option value="corporate">Corporate Event</option>
-                        <option value="baptism">Baptism/Christening</option>
-                        <option value="graduation">Graduation</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Preferred Date *</label>
-                    <input type="date" id="date" required>
-                </div>
-                <div class="form-group">
-                    <label>Preferred Time *</label>
-                    <input type="time" id="time" required>
-                </div>
-                <div class="form-group">
-                    <label>Location/Venue *</label>
-                    <input type="text" id="location" placeholder="Address or venue name" required>
-                </div>
+            <!-- STEP 6: REVIEW -->
+            <div id="step-6" class="step-content">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Review Booking</h2>
+                <div class="bg-white border-2 border-[#dc143c] rounded-2xl overflow-hidden shadow-lg mt-6">
+                    <div class="bg-[#dc143c] text-white p-6 font-bold text-xl">Booking Summary</div>
+                    <div class="p-6 space-y-4">
+                        <!-- Filled by JS -->
+                        <div class="flex items-center gap-4 pb-4 border-b">
+                            <div class="w-16 h-16 bg-gray-200 rounded-full overflow-hidden">
+                                <img id="review-img" src="" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <div class="text-xs uppercase font-bold text-gray-500">Photographer</div>
+                                <div id="review-photographer" class="font-bold text-lg">Not Selected</div>
+                            </div>
+                        </div>
 
-                <h3>Special Requests</h3>
-                <div class="form-group">
-                    <textarea id="notes" placeholder="Tell us about your vision, specific shots you want, themes, or any special requirements..."></textarea>
-                </div>
+                        <div class="grid grid-cols-2 gap-4 pb-4 border-b text-sm">
+                            <div><span class="block text-gray-500 font-bold text-xs uppercase">Event</span> <span id="review-type" class="font-bold"></span></div>
+                            <div><span class="block text-gray-500 font-bold text-xs uppercase">Date</span> <span id="review-date" class="font-bold"></span></div>
+                            <div class="col-span-2"><span class="block text-gray-500 font-bold text-xs uppercase">Location</span> <span id="review-location" class="font-bold"></span></div>
+                        </div>
 
-                <div class="btn-group">
-                    <button class="btn btn-back" onclick="previousStep()">Back</button>
-                    <button class="btn btn-next" onclick="nextStep()" id="step4-next">Next: Review Booking</button>
+                        <div id="review-items" class="space-y-2 text-sm"></div>
+
+                        <div class="border-t pt-4 flex justify-between items-center">
+                            <span class="font-bold text-xl">Total Investment</span>
+                            <span id="review-total" class="font-bold text-3xl text-[#dc143c]">₱0</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="step-content" id="step-5">
-            <div class="card">
-                <h2>Step 5: Review Your Booking</h2>
-                <div class="summary-card">
-                    <h2>Your Custom Package Summary</h2>
-                    <div class="summary-item">
-                        <div class="summary-label">Selected Services:</div>
-                        <div class="summary-value" id="summary-package">Not selected</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Package Customizations:</div>
-                        <div class="summary-value" id="summary-customizations">Standard package</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Additional Features:</div>
-                        <div class="summary-value" id="summary-features">None selected</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Event Type:</div>
-                        <div class="summary-value" id="summary-event-type">Not set</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Date & Time:</div>
-                        <div class="summary-value" id="summary-datetime">Not set</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Location:</div>
-                        <div class="summary-value" id="summary-location">Not set</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Contact Person:</div>
-                        <div class="summary-value" id="summary-contact">Not set</div>
-                    </div>
-                    <div class="summary-total">
-                        <span>Total Investment:</span>
-                        <span id="summary-total">₱0</span>
-                    </div>
+            <!-- SUCCESS STATE -->
+            <div id="step-success" class="hidden text-center py-10">
+                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
                 </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-back" onclick="previousStep()">Back</button>
-                    <button class="btn btn-next" onclick="submitBooking()">Confirm Booking</button>
-                </div>
+                <h2 class="text-3xl font-bold mb-2">Booking Confirmed!</h2>
+                <p class="text-gray-600 mb-8">Ref: <span id="booking-ref" class="font-mono font-bold text-[#dc143c]"></span></p>
+                <button onclick="location.reload()" class="px-8 py-3 bg-[#dc143c] text-white rounded-full font-bold">Book Another</button>
             </div>
-        </div>
 
-        <div class="success-message" id="success">
-            <h2>🎉 Booking Confirmed!</h2>
-            <p>Thank you for choosing our photography services!</p>
-            <p>Your custom photography package has been received. We'll contact you within 24 hours to finalize all the details.</p>
-            <p style="margin-top: 20px;">Booking Reference: <strong>#PH-2025-<span id="booking-ref"></span></strong></p>
-            <p style="margin-top: 15px; color: #666;">Please check your email for confirmation details.</p>
+            <!-- Navigation Buttons -->
+            <div id="nav-container" class="mt-auto pt-8 flex gap-4">
+                <button id="btn-next" onclick="app.nextStep()" class="flex-1 py-4 bg-[#dc143c] text-white rounded-xl font-bold shadow-lg hover:bg-[#b01030] disabled:opacity-50 disabled:cursor-not-allowed transition-all">Next Step</button>
+            </div>
+
         </div>
+    </div>
+
+    <!-- Floating Price -->
+    <div id="floating-price" class="fixed bottom-6 right-6 bg-[#dc143c] text-white py-4 px-6 rounded-2xl shadow-xl z-50">
+        <div class="text-xs uppercase font-bold opacity-90">Total Estimate</div>
+        <div class="text-2xl font-bold">₱<span id="float-total">0</span></div>
     </div>
 
     <?= import_packages("datatable", "tyrax", "loading", "ctr", "path", "twal") ?>
 
 
-    <script>
-    addEventListener("DOMContentLoaded",function(){
-        tyrax.get({
-            url:"coverage/get",
-            response:(send)=>{
-                let data = send.data;
-                data.forEach(column => {
-                    DOM.add_html("#card-grid",`
-                    <div class="option-item" onclick="togglePackageItem(this, 'photo-coverage', 3500)">
-                        <input type="checkbox" value="photo-coverage">
-                        <div class="option-details">
-                            <div class="option-name">${column.covname}</div>
-                            <div class="option-desc">${column.description}</div>
-                        </div>
-                        <div class="option-price">₱${column.price}</div>
-                    </div>
-                    `)
-                });
-            },
 
-        })
-    })
-</script>
-
-
-<script>
-    addEventListener("DOMContentLoaded", function() {
-        tyrax.get({
-            url: "preevent/get",
-            response: (send) => {
-                let data = send.data;
-                data.forEach(column => {
-                    DOM.add_html("#card-preevent", `
-                    <div class="option-item" onclick="togglePackageItem(this, 'pre-event-photo', 5000)">
-                        <input type="checkbox" value="pre-event-photo">
-                        <div class="option-details">
-                            <div class="option-name">${column.prename}</div>
-                            <div class="option-desc">${column.predescription}</div>
-                        </div>
-                        <div class="option-price">₱${column.preprice}</div>
-                    </div>
-                    `)
-                });
-            },
-
-        })
-    })
-</script>
-
-<script>
-    addEventListener("DOMContentLoaded",function(){
-        tyrax.get({
-            url:"equipment/get",
-            response:(send)=>{
-                let data = send.data;
-                data.forEach(column => {
-                    DOM.add_html("#card-equipment",`
-                    <div class="option-item" onclick="togglePackageItem(this, 'drone', 2000)">
-                        <input type="checkbox" value="drone">
-                        <div class="option-details">
-                            <div class="option-name">${column.name}</div>
-                            <div class="option-desc">${column.description}</div>
-                        </div>
-                        <div class="option-price">₱${column.price}</div>
-                    </div>
-                    `)
-                });
-            },
-
-        })
-    })
-</script>
-
-
-<script>
-    addEventListener("DOMContentLoaded",function(){
-        tyrax.get({
-            url:"addfeatures/get",
-            response:(send)=>{
-                let data = send.data;
-                data.forEach(column => {
-                    DOM.add_html("#card-addfeatures",`
-                    <div class="option-item" onclick="toggleFeature(this, 'same-day-edit', 3000)">
-                        <input type="checkbox" value="same-day-edit">
-                        <div class="option-details">
-                            <div class="option-name">${column.fname}</div>
-                            <div class="option-desc">${column.description}</div>
-                        </div>
-                        <div class="option-price">+₱${column.fprice}</div>
-                    </div>
-                    `)
-                });
-            },
-
-        })
-    })
-</script>
 
 
     <script>
         addEventListener("DOMContentLoaded", () => {
-            LOADING.load(true);
-
-            setTimeout(() => LOADING.load(false), 1000)
 
         })
     </script>
 
+
+
+
+
+
+
+
     <script>
-        let currentStep = 1;
-        let packageItems = [];
-        let hours = 0;
-        let photographers = 0;
-        let photos = 0;
-        let selectedFeatures = [];
+        addEventListener("DOMContentLoaded", function() {
+            tyrax.get({
+                url: "customizationpack/get",
+                request: {
+                    user: localStorage.getItem("id")
+                },
+                response: (send) => {
+                    let data = send.data;
+                    if (data.length == 0) {
+                        return;
+                    }
+                    //document.getElementById('request_container').innerHTML = '<div class="no-order">No request orders yet</div>';
+                    data.forEach(column => {
+                        let container = "#";
+                        let category = column.category;
 
-        function togglePackageItem(element, itemName, price) {
-            const checkbox = element.querySelector('input');
-            checkbox.checked = !checkbox.checked;
+                        if (category == "cov") {
+                            container = '#coveragestep';
+                        }
 
-            if (checkbox.checked) {
-                element.classList.add('selected');
-                packageItems.push({
-                    name: itemName,
-                    price: price
-                });
-            } else {
-                element.classList.remove('selected');
-                packageItems = packageItems.filter(item => item.name !== itemName);
-            }
+                        if (category == "pre") {
+                            container = '#preevent';
+                        }
 
-            updateStep1Total();
+                        if (category == "equip") {
+                            container = '#equipment';
+                        }
+
+                        if (category == "feat") {
+                            container = '#features';
+                        }
+
+                        document.querySelector(container).innerHTML = ""
+                        CTR.add_html(container, `
+                            <div  class="service-card flex items-center p-5 rounded-xl border-2 border-gray-200 hover:bg-gray-50 cursor-pointer transition-all"
+                            onclick="app.toggleSelection(this, 'service')" data-id="${column.id}" data-price="${column.price}" data-name="${column.name}">
+                        <div class="w-6 h-6 rounded border-2 border-gray-300 mr-4 flex-shrink-0 flex items-center justify-center checkbox-ui"></div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-lg">${column.name}</h4>
+                                <p class="text-sm text-gray-600">${column.description} (${column.id})</p>
+                            </div>
+                            <div class="text-[#dc143c] font-bold text-lg ml-4">₱${column.price}</div>
+                            </div>
+                        
+                        `)
+                    });
+                },
+            })
+        })
+    </script>
+
+
+
+
+
+
+    <script>
+        let basket = [];
+
+        function displayAllphotographers(searchTerm = '') {
+            tyrax.get({
+                url: "admin/get",
+                response: (send) => {
+                    let data = send.data;
+                    data.forEach(column => {
+                        const imageSrc = column.img || "<?= assets('img/placeholder.png') ?>";
+                        const name = column.name;
+                        const lname = column.lname;
+                        const skill = column.skill;
+                        const status = column.status;
+                        const user_id = column.user_id;
+
+                        basket[user_id] = {
+                            name: name,
+                            lname: lname,
+                            status: status,
+                            skill: skill,
+                            user_id: user_id
+
+                        }
+                        DOM.add_html("#profilephotgrapher", `
+                        <div class="photographer-card relative group cursor-pointer rounded-xl border-2 border-gray-200 bg-white hover:border-red-300 hover:shadow-lg transition-all h-full flex flex-col overflow-hidden"
+                        onclick="app.selectPhotographer('p1', this)" data-name="${name} ${lname}" data-id="${user_id}">
+                        <div class="relative h-64">
+                            <img src="${imageSrc}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded-lg text-sm font-bold flex items-center gap-1">★ 4.9</div>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col">
+                            <h3 class="text-xl font-bold mb-1">${name} ${lname} (${user_id})</h3>
+                            
+                            <p class="text-sm text-gray-600 mb-4 flex-1">${column.description}</p>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="text-xs bg-gray-100 px-2 py-1 rounded">${skill}</span>
+                            </div>
+                        </div>
+                        <!-- Hidden Check Icon -->
+                        <div class="check-icon hidden absolute top-3 left-3 bg-[#dc143c] text-white p-1 rounded-full shadow-lg">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                        </div>
+                    </div>`)
+                    });
+                },
+            })
         }
 
-        function updateStep1Total() {
-            const total = packageItems.reduce((sum, item) => sum + item.price, 0);
-            document.getElementById('step1-total').textContent = '₱' + total.toLocaleString();
-            document.getElementById('step1-next').disabled = packageItems.length === 0;
-            updateSummary();
-            updateFloatingPrice();
-        }
 
-        function updateHours(value) {
-            hours = parseInt(value);
-            document.getElementById('hours-value').textContent = hours + (hours === 0 ? ' extra hours' : (' extra hour' + (hours > 1 ? 's' : '')));
-            updateSummary();
-            updateFloatingPrice();
-        }
-
-        function updatePhotographers(value) {
-            photographers = parseInt(value);
-            document.getElementById('photographers-value').textContent = photographers + (photographers === 0 ? ' additional' : (' additional'));
-            updateSummary();
-            updateFloatingPrice();
-        }
-
-        function updatePhotos(value) {
-            photos = parseInt(value);
-            document.getElementById('photos-value').textContent = photos + ' extra photo' + (photos !== 1 ? 's' : '');
-            updateSummary();
-            updateFloatingPrice();
-        }
-
-        function toggleFeature(element, featureName, price) {
-            const checkbox = element.querySelector('input');
-            checkbox.checked = !checkbox.checked;
-
-            if (checkbox.checked) {
-                element.classList.add('selected');
-                selectedFeatures.push({
-                    name: featureName,
-                    price: price
-                });
-            } else {
-                element.classList.remove('selected');
-                selectedFeatures = selectedFeatures.filter(f => f.name !== featureName);
-            }
-            updateSummary();
-            updateFloatingPrice();
-        }
-
-        function updateFloatingPrice() {
-            let total = packageItems.reduce((sum, item) => sum + item.price, 0);
-            total += hours * 500;
-            total += photographers * 1500;
-            total += photos * 20;
-            total += selectedFeatures.reduce((sum, f) => sum + f.price, 0);
-
-            document.querySelector('.floating-price-amount').textContent = '₱' + total.toLocaleString();
-        }
-
-        function nextStep() {
-            if (currentStep === 4) {
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const phone = document.getElementById('phone').value;
-                const eventType = document.getElementById('event-type').value;
-                const date = document.getElementById('date').value;
-                const time = document.getElementById('time').value;
-                const location = document.getElementById('location').value;
-
-                if (!name || !email || !phone || !eventType || !date || !time || !location) {
-                    alert('Please fill in all required fields');
-                    return;
-                }
-
-                const eventTypeText = document.getElementById('event-type').options[document.getElementById('event-type').selectedIndex].text;
-                document.getElementById('summary-event-type').textContent = eventTypeText;
-                document.getElementById('summary-datetime').textContent =
-                    new Date(date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    }) + ' at ' + formatTime(time);
-                document.getElementById('summary-location').textContent = location;
-                document.getElementById('summary-contact').textContent = name + ' (' + phone + ')';
-            }
-
-            document.getElementById('step-' + currentStep).classList.remove('active');
-            currentStep++;
-            document.getElementById('step-' + currentStep).classList.add('active');
-            updateProgressBar();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        function formatTime(time) {
-            const [hours, minutes] = time.split(':');
-            const hour = parseInt(hours);
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            const displayHour = hour % 12 || 12;
-            return displayHour + ':' + minutes + ' ' + ampm;
-        }
-
-        function previousStep() {
-            document.getElementById('step-' + currentStep).classList.remove('active');
-            currentStep--;
-            document.getElementById('step-' + currentStep).classList.add('active');
-            updateProgressBar();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        function updateProgressBar() {
-            const steps = document.querySelectorAll('.progress-step');
-            steps.forEach((step, index) => {
-                const stepNum = index + 1;
-                if (stepNum < currentStep) {
-                    step.classList.add('completed');
-                    step.classList.remove('active');
-                } else if (stepNum === currentStep) {
-                    step.classList.add('active');
-                    step.classList.remove('completed');
-                } else {
-                    step.classList.remove('active', 'completed');
-                }
-            });
-
-            const progress = ((currentStep - 1) / 4) * 100;
-            document.getElementById('progress-fill').style.width = progress + '%';
-        }
-
-        function updateSummary() {
-            const packageNames = {
-                'photo-coverage': 'Photo Coverage',
-                'video-highlights': 'Video Highlights',
-                'pre-event-photo': 'Pre-Event Photo Session',
-                'pre-event-video': 'Pre-Event Video Session',
-                'drone': 'Drone Coverage',
-                'projector': 'Projector Setup'
-            };
-
-            const selectedPackages = packageItems.length > 0 ?
-                packageItems.map(item => packageNames[item.name] || item.name).join(', ') :
-                'Not selected';
-            document.getElementById('summary-package').textContent = selectedPackages;
-
-            let customText = '';
-            if (hours > 0) customText += hours + ' extra hour' + (hours > 1 ? 's' : '') + ', ';
-            if (photographers > 0) customText += photographers + ' extra photographer/videographer' + (photographers > 1 ? 's' : '') + ', ';
-            if (photos > 0) customText += photos + ' extra photo' + (photos > 1 ? 's' : '');
-
-            if (customText === '') customText = 'Standard package';
-            else customText = customText.replace(/, $/, '');
-
-            document.getElementById('summary-customizations').textContent = customText;
-
-            const featureNames = selectedFeatures.length > 0 ?
-                selectedFeatures.map(f => {
-                    const names = {
-                        'same-day-edit': 'Same Day Edit',
-                        'photo-booth': 'Photo Booth',
-                        'album': 'Photo Album',
-                        'rush': 'Rush Editing',
-                        'live-streaming': 'Live Streaming',
-                        'prints': 'Printed Photos'
-                    };
-                    return names[f.name] || f.name;
-                }).join(', ') :
-                'None selected';
-            document.getElementById('summary-features').textContent = featureNames;
-
-            let total = packageItems.reduce((sum, item) => sum + item.price, 0);
-            total += hours * 500;
-            total += photographers * 1500;
-            total += photos * 20;
-            total += selectedFeatures.reduce((sum, f) => sum + f.price, 0);
-
-            document.getElementById('summary-total').textContent = '₱' + total.toLocaleString();
-        }
-
-        function submitBooking() {
-            const bookingRef = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-            document.getElementById('booking-ref').textContent = bookingRef;
-
-            document.getElementById('step-5').style.display = 'none';
-            document.querySelector('.progress-bar').style.display = 'none';
-            document.querySelector('.floating-price').style.display = 'none';
-            document.getElementById('success').classList.add('show');
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-
-            console.log('Booking submitted:', {
-                packageItems: packageItems,
-                hours: hours,
-                photographers: photographers,
-                photos: photos,
-                features: selectedFeatures,
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                eventType: document.getElementById('event-type').value,
-                date: document.getElementById('date').value,
-                time: document.getElementById('time').value,
-                location: document.getElementById('location').value,
-                notes: document.getElementById('notes').value,
-                reference: bookingRef
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date').setAttribute('min', today);
+        window.addEventListener("DOMContentLoaded", function() {
+            displayAllphotographers();
         });
+    </script>
+
+
+<script>
+    addEventListener("DOMContentLoaded",function(){
+        tyrax.get({
+            url:"services/get",
+            //inspect:true,
+            response:(send)=>{
+                let data = send.data;
+                
+                data.forEach(column => {
+                    DOM.add_html("#inp-type",`
+                    <option value="${column.servicesID}">${column.services_name}</option>
+                    `)
+                });
+            },
+
+        })
+    })
+</script>
+
+
+
+
+    <script>
+        class App {
+            constructor() {
+                this.selected ={};
+                this.step = 1;
+                this.totalSteps = 6;
+                this.state = {
+                    photographer: null, // DOM element
+                    photo_id: null,
+                    services: new Set(), // Set of DOM elements
+                    features: new Set(), // Set of DOM elements
+                    custom: {
+                        hours: {
+                            val: 0,
+                            price: 0
+                        },
+                        photographers: {
+                            val: 0,
+                            price: 0
+                        },
+                        photos: {
+                            val: 0,
+                            price: 0
+                        }
+                    }
+                };
+                this.updateUI();
+            }
+
+            // --- Navigation ---
+            nextStep() {
+                if (this.step === 5 && !this.validateDetails()) return;
+
+                if (this.step < this.totalSteps) {
+                    this.step++;
+                    this.updateUI();
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    this.submit();
+                }
+            }
+
+            prevStep() {
+                if (this.step > 1) {
+                    this.step--;
+                    this.updateUI();
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+
+            updateUI() {
+                // Steps Visibility
+                document.querySelectorAll('.step-content').forEach((el, idx) => {
+                    const stepNum = idx + 1;
+                    if (stepNum === this.step) el.classList.add('active');
+                    else el.classList.remove('active');
+                });
+
+                // Progress Bara
+                const pct = ((this.step - 1) / (this.totalSteps - 1)) * 100;
+                document.getElementById('progress-bar').style.width = pct + '%';
+
+                document.querySelectorAll('.step-indicator').forEach(el => {
+                    const s = parseInt(el.dataset.step);
+                    const circle = el.querySelector('div');
+                    const label = el.querySelector('span');
+
+                    if (s === this.step) {
+                        circle.className = "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-[#dc143c] border-[#dc143c] text-white transition-all scale-110 shadow-lg";
+                        label.className = "mt-2 text-xs font-bold text-[#dc143c]";
+                    } else if (s < this.step) {
+                        circle.className = "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-[#1a1a1a] border-[#1a1a1a] text-white transition-all";
+                        label.className = "mt-2 text-xs font-medium text-[#1a1a1a]";
+                    } else {
+                        circle.className = "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 bg-white border-gray-300 text-gray-400 transition-all";
+                        label.className = "mt-2 text-xs font-medium text-gray-400";
+                    }
+                });
+
+                // Button State
+                const btnNext = document.getElementById('btn-next');
+                const btnBack = document.getElementById('global-back');
+
+                btnBack.classList.toggle('hidden', this.step === 1);
+
+                if (this.step === 1 && !this.state.photographer) btnNext.disabled = true;
+                else if (this.step === 2 && this.state.services.size === 0) btnNext.disabled = true;
+                else btnNext.disabled = false;
+
+                btnNext.innerText = this.step === 6 ? 'Confirm Booking' : 'Next Step';
+
+                if (this.step === 6) this.renderReview();
+
+                // Hide floating price on review
+                document.getElementById('floating-price').classList.toggle('hidden', this.step === 6);
+            }
+
+
+            // --- Logic ---
+            selectPhotographer(id, el) {
+                // Deselect others
+                document.querySelectorAll('.photographer-card').forEach(c => {
+                    c.classList.remove('selected-card', 'ring-2', 'ring-[#dc143c]');
+                    c.querySelector('.check-icon').classList.add('hidden');
+                });
+                // Select clicked
+                el.classList.add('selected-card', 'ring-2', 'ring-[#dc143c]');
+                el.querySelector('.check-icon').classList.remove('hidden');
+
+                this.state.photographer = el;
+                this.updateUI();
+            }
+
+            toggleSelection(el, type) {
+                const set = type === 'service' ? this.state.services : this.state.features;
+
+                if (set.has(el)) {
+                    set.delete(el);
+                    el.classList.remove('selected-card');
+                    el.querySelector('.checkbox-ui').innerHTML = '';
+                    el.querySelector('.checkbox-ui').classList.remove('bg-[#dc143c]', 'border-[#dc143c]');
+                    el.querySelector('.checkbox-ui').classList.add('border-gray-300');
+                } else {
+                    set.add(el);
+                    el.classList.add('selected-card');
+                    el.querySelector('.checkbox-ui').innerHTML = '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
+                    el.querySelector('.checkbox-ui').classList.remove('border-gray-300');
+                    el.querySelector('.checkbox-ui').classList.add('bg-[#dc143c]', 'border-[#dc143c]');
+                }
+
+                this.calculateTotal();
+                if (type === 'service') this.updateUI(); // Check validation
+            }
+
+            updateCustom(key, val, pricePerUnit, labelSuffix) {
+                const num = parseInt(val);
+                this.state.custom[key] = {
+                    val: num,
+                    price: num * pricePerUnit
+                };
+
+                // Update Label Text directly
+                const label = document.getElementById(`display-${key}`);
+                if (num === 0) label.innerText = key === 'hours' ? 'No extra hours' : (key === 'photographers' ? 'Standard Crew' : 'Standard Amount');
+                else label.innerText = `+ ${num} ${labelSuffix}`;
+
+                this.calculateTotal();
+            }
+
+            calculateTotal() {
+                let total = 0;
+                this.state.services.forEach(el => total += parseInt(el.dataset.price));
+                this.state.features.forEach(el => total += parseInt(el.dataset.price));
+                Object.values(this.state.custom).forEach(o => total += o.price);
+
+                document.getElementById('float-total').innerText = total.toLocaleString();
+                return total;
+            }
+
+            validateDetails() {
+                const req = ['inp-type', 'inp-location', 'inp-date', 'inp-time'];
+                let valid = true;
+                req.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el.value) {
+                        el.classList.add('border-red-500');
+                        valid = false;
+                    } else {
+                        el.classList.remove('border-red-500');
+                    }
+                });
+                if (!valid) alert('Please fill in all required fields');
+                return valid;
+            }
+
+            renderReview() {
+                //console.log(p.dataset.name);
+                const p = this.state.photographer;
+                document.getElementById('review-photographer').innerText = p.dataset.name;
+                let pid = p.dataset.id;
+                document.getElementById('review-img').src = p.querySelector('img').src;
+
+                document.getElementById('review-type').innerText = document.getElementById('inp-type').selectedOptions[0].text;
+                document.getElementById('review-location').innerText = document.getElementById('inp-location').value;
+                document.getElementById('review-date').innerText = document.getElementById('inp-date').value + ' @ ' + document.getElementById('inp-time').value;
+
+                let html = '';
+                // Services
+                let mga_napili_s = [];
+                this.state.services.forEach(el => {
+                    html += `<div class="flex justify-between"><span class="text-gray-800">${el.dataset.name}</span><span class="font-bold">₱${parseInt(el.dataset.price).toLocaleString()}</span></div>`;
+                    mga_napili_s[el.dataset.id] = el.dataset.name;
+                    console.log(mga_napili_s);
+                });
+                // Custom
+                if (this.state.custom.hours.val > 0) html += `<div class="flex justify-between"><span class="text-gray-800">Extra Hours (${this.state.custom.hours.val})</span><span class="font-bold">₱${this.state.custom.hours.price.toLocaleString()}</span></div>`;
+                if (this.state.custom.photographers.val > 0) html += `<div class="flex justify-between"><span class="text-gray-800">Extra Shooters (${this.state.custom.photographers.val})</span><span class="font-bold">₱${this.state.custom.photographers.price.toLocaleString()}</span></div>`;
+                if (this.state.custom.photos.val > 0) html += `<div class="flex justify-between"><span class="text-gray-800">Extra Photos (${this.state.custom.photos.val})</span><span class="font-bold">₱${this.state.custom.photos.price.toLocaleString()}</span></div>`;
+                
+                
+                // Features
+                let mga_napili_f = [];
+                this.state.features.forEach(el => {
+                    html += `<div class="flex justify-between"><span class="text-gray-800">+ ${el.dataset.name}</span><span class="font-bold">₱${parseInt(el.dataset.price).toLocaleString()}</span></div>`;
+                    mga_napili_f[el.dataset.id] = el.dataset.name;
+                    console.log(mga_napili_f);
+                });
+
+
+                document.getElementById('review-items').innerHTML = html;
+                document.getElementById('review-total').innerText = '₱' + this.calculateTotal().toLocaleString();
+
+
+
+             this.selected = {
+                    photgrapher: pid,
+                    photoname: p.dataset.name,
+                    packages: mga_napili_s,
+                    location: document.getElementById('inp-location').value,
+                    services: document.getElementById('inp-type').value,
+                    date_time: document.getElementById('inp-date').value + ' @ ' + document.getElementById('inp-time').value,
+                    addhrs: this.state.custom.hours.val,
+                    addshooter: this.state.custom.photographers.val,
+                    extraphot: this.state.custom.photos.val,
+                    customer: localStorage.getItem("id"),
+                    total: this.calculateTotal(),
+                    
+
+                    
+
+                };
+                console.log(this.selected);
+                
+            }
+
+            submit() {
+
+                submitOrder(this.selected);
+                const ref = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+                document.getElementById('booking-ref').innerText = '#PH-2025-' + ref;
+                // Hide main steps, show success
+                document.querySelectorAll('.step-content').forEach(el => el.style.display = 'none');
+                document.getElementById('nav-container').style.display = 'none';
+                document.getElementById('step-indicators').parentElement.style.display = 'none';
+                document.getElementById('global-back').style.display = 'none';
+
+                document.getElementById('step-success').classList.remove('hidden');
+                document.getElementById('step-success').classList.add('active');
+            }
+        }
+
+        function submitOrder(selected) {
+                    tyrax.post({
+                        url: "bookpack/add",
+                        data: selected,
+                        //test:true,
+                        response: (send) => {
+                            if (send.code == 200) {
+                                twal.ok("Booking submitted successfully").then(() => location.href = "?page=users/home")
+                            } else {
+                                twal.err(send.message);
+                            }
+                        }
+                    })
+                }
+        // Initialize Input Date Min
+        document.getElementById('inp-date').min = new Date().toISOString().split('T')[0];
+
+        const app = new App();
     </script>
 </body>
 

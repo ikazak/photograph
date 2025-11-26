@@ -1,501 +1,974 @@
-    <!DOCTYPE html>
-    <html lang="en" class="dark">
+<!DOCTYPE html>
+<html lang="en" class="dark">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Package Selector</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <style>
-            /* Custom styles for a dark theme and rounded corners */
-            body {
-                font-family: 'Inter', sans-serif;
-                background-color: #1a202c;
-                /* Dark background */
-                color: #e2e8f0;
-                /* Light text */
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Selector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+
+        .navbar-top {
+            background: linear-gradient(90deg, #ffffff 0%, #f8fbff 100%);
+            border-bottom: 2px solid #e60000;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(230, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e60000 0%, #ff3333 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(230, 0, 0, 0.3);
+        }
+
+        .logo-icon svg {
+            color: #ffffff;
+            width: 24px;
+            height: 24px;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #e60000, #ff3333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #f0f0f0 0%, #f5f5f5 100%);
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            border: 1px solid #e60000;
+            box-shadow: 0 2px 6px rgba(230, 0, 0, 0.08);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #e60000 0%, #ff3333 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(230, 0, 0, 0.2);
+        }
+
+        .user-avatar svg {
+            color: #ffffff;
+            width: 20px;
+            height: 20px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.95rem;
+            letter-spacing: -0.3px;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #e60000 0%, #ff3333 100%);
+            color: #ffffff;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(230, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logout-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(230, 0, 0, 0.35);
+        }
+
+        .logout-btn:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .logout-btn svg {
+            width: 22px;
+            height: 22px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .header-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .header-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 0.75rem 1.75rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .nav-btn-active {
+            background: linear-gradient(135deg, #e60000 0%, #ff3333 100%);
+            color: #ffffff;
+            box-shadow: 0 6px 16px rgba(230, 0, 0, 0.35);
+        }
+
+        .nav-btn-inactive {
+            background: #ffffff;
+            color: #1a1a1a;
+            border: 2px solid #e8e8e8;
+        }
+
+        .nav-btn-inactive:hover {
+            border-color: #e60000;
+            background: #f9f9f9;
+        }
+
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .package-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 2px solid #e8e8e8;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .package-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #e60000 0%, #ff3333 100%);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .package-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 28px rgba(230, 0, 0, 0.15);
+            border-color: #e60000;
+        }
+
+        .package-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .package-card.selected {
+            border: 2px solid #e60000;
+            box-shadow: 0 8px 24px rgba(230, 0, 0, 0.2);
+            background: linear-gradient(135deg, #ffffff 0%, #fff9f9 100%);
+        }
+
+        .package-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 1.25rem;
+        }
+
+        .package-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .package-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .select-btn {
+            background: linear-gradient(135deg, #e60000 0%, #ff3333 100%);
+            color: #ffffff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(230, 0, 0, 0.25);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .select-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .select-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(230, 0, 0, 0.35);
+        }
+
+        .select-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .select-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Order Section */
+        .order-section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .order-category {
+            margin-bottom: 3rem;
+        }
+
+        .order-category-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            letter-spacing: -0.5px;
+        }
+
+        .order-category-title.request {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            color: #e65100;
+        }
+
+        .order-category-title.pending {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1565c0;
+        }
+
+        .order-category-title.ongoing {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            color: #6a1b9a;
+        }
+
+        .order-category-title.completed {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #2e7d32;
+        }
+
+        .order-container {
+            background: #ffffff;
+            border: 2px solid #e60000;
+            border-radius: 14px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(230, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .order-container:hover {
+            box-shadow: 0 6px 20px rgba(230, 0, 0, 0.2);
+        }
+
+        .order-header {
+            font-size: 1.2rem;
+            color: #e60000;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .order-details {
+            border-top: 2px solid #e60000;
+            padding-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .order-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .order-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-detail-label {
+            font-weight: 600;
+            color: #e60000;
+        }
+
+        .order-detail-value {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .order-price {
+            color: #e60000;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .cancel-button,
+        .action-button {
+            padding: 0.65rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .cancel-button {
+            background: linear-gradient(135deg, #e60000 0%, #ff3333 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(230, 0, 0, 0.25);
+        }
+
+        .cancel-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(230, 0, 0, 0.35);
+        }
+
+        .action-button {
+            background: #e8e8e8;
+            color: #1a1a1a;
+            border: 2px solid #d0d0d0;
+        }
+
+        .action-button:hover {
+            background: #d0d0d0;
+        }
+
+        .no-order {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-weight: 500;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 2px dashed #e8e8e8;
+        }
+
+        /* Modal Enhancement */
+        .modal-content {
+            background: #ffffff;
+            border: 2px solid #e60000;
+            border-radius: 16px;
+        }
+
+        .modal-header {
+            border-bottom: 2px solid #e60000;
+            background: linear-gradient(135deg, #fff9f9 0%, #ffffff 100%);
+        }
+
+        .modal-title {
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .form-control {
+            border: 2px solid #e8e8e8;
+            border-radius: 10px;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #e60000;
+            box-shadow: 0 0 0 3px rgba(230, 0, 0, 0.1);
+        }
+
+        /* Back Button */
+        #backBtn {
+            background: #ffffff;
+            border: 2px solid #e60000;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #backBtn:hover {
+            background: #e60000;
+            transform: translateX(-2px);
+        }
+
+        #backBtn svg {
+            color: #e60000;
+            width: 24px;
+            height: 24px;
+        }
+
+        #backBtn:hover svg {
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-content {
+                flex-direction: column;
+                gap: 1rem;
             }
 
-            .rounded-card {
-                border-radius: 1.5rem;
-                /* Rounded corners */
+            .packages-grid {
+                grid-template-columns: 1fr;
             }
 
-            .transition-transform {
-                transition-property: transform;
-                transition-duration: 300ms;
+            .header-title {
+                font-size: 1.75rem;
             }
 
-            .hover-scale:hover {
-                transform: scale(1.02);
+            .order-detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
             }
+        }
+    </style>
+</head>
 
-            .selected-package {
-                border: 2px solid #6366f1;
-                /* Highlight selected card */
-            }
-
-            .status-pill {
-                padding: 0.25rem 0.75rem;
-                border-radius: 9999px;
-                font-weight: bold;
-                font-size: 0.75rem;
-                text-transform: uppercase;
-            }
-
-            .btn {
-                height: 50px;
-                width: 150px;
-                background-color: blue;
-                border-radius: 20px;
-
-            }
-        </style>
-    </head>
-
-    <body class="bg-gray-900 text-gray-100 min-h-screen flex items-center justify-center p-4">
-
-        <div class="w-full max-w-5xl bg-gray-800 rounded-3xl shadow-xl overflow-hidden p-6 md:p-10">
-
-            <header class="flex justify-between items-center mb-6">
-                <button id="backBtn" class="hidden text-gray-400 hover:text-white transition-colors duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+<body>
+    <!-- Enhanced Navbar -->
+    <div class="navbar-top">
+        <div class="navbar-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                </button>
-                <div class="flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-indigo-400">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    </svg>
-                    <span id="userName" class="text-xl font-semibold"></span>
+                </div>
+                <div class="logo-text">PhotoBook</div>
+            </div>
+
+            <div class="user-section">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        </svg>
+                    </div>
+                    <span class="user-name" id="userName">John Doe</span>
                 </div>
                 <a href="<?= page('loginpage.php') ?>" onclick="return confirm('Are you sure you want to log out?');">
-                    <button id="logoutBtn" class="text-gray-400 hover:text-white transition-colors duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V7.5a2.25 2.25 0 0 1 2.25-2.25h.25c1.03 0 2.01.2 2.9.56l.09.03a4.522 4.522 0 0 1 1.625 1.575M16.5 14.25c1.616 1.616 1.776 3.016 1.776 3.016m0 0a2.25 2.25 0 0 1-2.25 2.25H6.5a2.25 2.25 0 0 1-2.25-2.25V7.5c0-1.24 1.01-2.25 2.25-2.25h.25M17.5 14.25v2.25a2.25 2.25 0 0 1-2.25 2.25H6.5a2.25 2.25 0 0 1-2.25-2.25V7.5" />
+                    <button id="logoutBtn" class="logout-btn" title="Logout">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V7.5a2.25 2.25 0 012.25-2.25h.25c1.03 0 2.01.2 2.9.56l.09.03a4.522 4.522 0 011.625 1.575m0 0a4.649 4.649 0 015.197 4.356M9 12a3.75 3.75 0 010-7.5H12m0 0a3 3 0 110 6m-3-6v6m3-6h3m-3 6h3" />
                         </svg>
-                    </button></a>
-            </header>
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
 
-            <div class="flex justify-center mb-8 gap-4">
-                <button id="showPackagesBtn" class="px-6 py-3 rounded-full font-semibold transition-colors duration-300 bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg">
-                    View Packages
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header-section">
+            <h1 class="header-title">Photography Services</h1>
+            <p class="header-subtitle">Select your perfect photography package</p>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <button id="showPackagesBtn" class="nav-btn nav-btn-active">
+                📦 View Packages
+            </button>
+            <a href="<?= page('users/customization.php') ?>">
+                <button id="showPackages2Btn" class="nav-btn nav-btn-inactive">
+                    ✨ Customization
                 </button>
-                <a href="<?= page('users/customization.php') ?>"><button id="showPackages2Btn" class="px-6 py-3 rounded-full font-semibold transition-colors duration-300 bg-gray-700 hover:bg-gray-600 text-gray-300 shadow-lg">
-                    Customization
-                </button></a>
-                <button id="showOrderBtn" class="px-6 py-3 rounded-full font-semibold transition-colors duration-300 bg-gray-700 hover:bg-gray-600 text-gray-300 shadow-lg">
-                    View My Orders
+            </a>
+            <button id="showOrderBtn" class="nav-btn nav-btn-inactive">
+                📋 View My Orders
+            </button>
+        </div>
+
+        <!-- Packages Section -->
+        <section id="packagesSection" class="packages-grid">
+            <!-- Packages will be dynamically loaded here -->
+        </section>
+
+        <!-- Packages Section 2 -->
+        <section id="packagesSection2" class="hidden packages-grid">
+            <div class="package-card">
+                <img src="https://placehold.co/300x200/e60000/white?text=Premium+A" alt="Premium Package A" class="package-image">
+                <h3 class="package-name">Premium Package A</h3>
+                <p class="package-description">Perfect for weddings and special occasions with professional coverage.</p>
+                <button class="select-btn"><span>Select Package</span></button>
+            </div>
+            <div class="package-card">
+                <img src="https://placehold.co/300x200/e60000/white?text=Premium+B" alt="Premium Package B" class="package-image">
+                <h3 class="package-name">Premium Package B</h3>
+                <p class="package-description">Includes drone and cinematic editing for your memorable moments.</p>
+                <button class="select-btn"><span>Select Package</span></button>
+            </div>
+            <div class="package-card">
+                <img src="https://placehold.co/300x200/e60000/white?text=Premium+C" alt="Premium Package C" class="package-image">
+                <h3 class="package-name">Premium Package C</h3>
+                <p class="package-description">All-inclusive package with full day coverage and post-production.</p>
+                <button class="select-btn"><span>Select Package</span></button>
+            </div>
+        </section>
+
+        <!-- Orders Section -->
+        <section id="orderSection" class="hidden">
+            <h2 class="order-section-title">My Orders</h2>
+
+            <div class="order-category">
+                <h3 class="order-category-title request">📝 Request Orders</h3>
+                <div id="request_container">
+                    <!-- Orders will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <div class="order-category">
+                <h3 class="order-category-title pending">⏳ Pending Payment</h3>
+                <div id="completedOrdersContainer">
+                    <!-- Pending orders will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <div class="order-category">
+                <h3 class="order-category-title ongoing">🎬 On Going</h3>
+                <div id="on_going">
+                    <!-- Ongoing orders will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <div class="order-category">
+                <h3 class="order-category-title completed">✅ Completed</h3>
+                <div id="completed">
+                    <!-- Completed orders will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <div class="order-category">
+                <h3 class="order-category-title completed">✅To Rate</h3>
+                <div id="rates">
+                    <!-- Completed orders will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button id="changePackageBtn" class="nav-btn nav-btn-active">
+                    ← Back to Packages
                 </button>
             </div>
 
-            <!-- Original Packages -->
-            <section id="packagesSection" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-            </section>
+        </section>
+    </div>
 
-            <!-- New Packages 2 -->
-            <section id="packagesSection2" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="package-card bg-gray-700 rounded-card p-4 shadow-lg flex flex-col items-center transition-transform hover-scale">
-                    <img src="https://placehold.co/300x200/red/white?text=Package+2A" class="w-full h-auto rounded-lg mb-4">
-                    <h3 class="text-2xl font-bold mb-1">Premium Package A</h3>
-                    <p class="text-center text-gray-300 text-sm mb-4">Perfect for weddings and special occasions.</p>
-                    <button class="btn mt-auto w-full py-3 rounded-full font-bold transition-colors duration-300">Select</button>
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">💳 Payment Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="package-card bg-gray-700 rounded-card p-4 shadow-lg flex flex-col items-center transition-transform hover-scale">
-                    <img src="https://placehold.co/300x200/red/white?text=Package+2B" class="w-full h-auto rounded-lg mb-4">
-                    <h3 class="text-2xl font-bold mb-1">Premium Package B</h3>
-                    <p class="text-center text-gray-300 text-sm mb-4">Includes drone and cinematic editing.</p>
-                    <button class="btn mt-auto w-full py-3 rounded-full font-bold transition-colors duration-300">Select</button>
-                </div>
-                <div class="package-card bg-gray-700 rounded-card p-4 shadow-lg flex flex-col items-center transition-transform hover-scale">
-                    <img src="https://placehold.co/300x200/red/white?text=Package+2C" class="w-full h-auto rounded-lg mb-4">
-                    <h3 class="text-2xl font-bold mb-1">Premium Package C</h3>
-                    <p class="text-center text-gray-300 text-sm mb-4">All-inclusive package with full day coverage.</p>
-                    <button class="btn mt-auto w-full py-3 rounded-full font-bold transition-colors duration-300">Select</button>
-                </div>
-            </section>
-
-
-            <section id="orderSection" class="hidden text-center">
-                <h2 class="text-3xl font-bold text-white mb-6">My Current Orders</h2>
-
-                <div class="mb-8">
-                    <h3 class="text-2xl font-bold text-yellow-500 mb-4">Request Order</h3>
-                    <div id="" class="space-y-4">
-                        <div class="order-container" class="no-orders-container" id="request_container">
-
-
-
+                <div class="modal-body">
+                    <form id="bookingForm">
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">GCash Number</label>
+                            <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="09XXXXXXXXX">
                         </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-2xl font-bold text-blue-500 mb-4">Pending...</h3>
-                    <div id="" class="space-y-4">
-                        <div class="order-container" class="no-orders-container" id="completedOrdersContainer">
-
-
-
+                        <div>
+                            <input type="hidden" name="id" id="id_request">
                         </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-2xl font-bold text-green-500 mb-4">Completed</h3>
-                    <div id="" class="space-y-4">
-                        <div class="order-container" class="no-orders-container" id="on_going">
-
-
-
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Down Payment Amount</label>
+                            <input type="number" class="form-control" name="amount" id="amount" placeholder="0.00">
                         </div>
-                    </div>
-                </div>
-
-                <button id="changePackageBtn" class="mt-8 px-6 py-3 rounded-full font-semibold transition-colors duration-300 bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg">
-                    View Packages
-                </button>
-            </section>
-
-        </div>
-
-
-        <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="paymentModalLabel">Payment Information</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <form id="bookingForm">
-                            <div class="mb-3">
-                                <label for="phoneNumber" class="form-label">Enter Gcash Number:</label>
-                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber">
-                            </div>
-                            <div>
-                                <input type="hidden" name="id" id="id_request">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="amount" class="form-label">Down Payment:</label>
-                                <input type="number" class="form-control" name="amount" id="amount">
-                            </div>
-
-                            <button type="button" id="otpsend" class="btn btn-success mb-3">Send OTP</button>
-
-                            <div class="mb-3">
-                                <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP">
-                            </div>
-
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
-                                <button type="submit" id="submitForm" class="btn btn-primary">Confirm & Pay</button>
-                            </div>
-                        </form>
-                    </div>
-
-
+                        <button type="button" id="otpsend" class="btn btn-outline-danger w-100 mb-3 fw-bold">📤 Send OTP</button>
+                        <div class="mb-3">
+                            <label for="otp" class="form-label">OTP Code</label>
+                            <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter 6-digit OTP">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" id="submitForm" class="btn btn-danger fw-bold">✓ Confirm & Pay</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-        <?= import_packages("datatable", "tyrax", "loading", "ctr", "path", "twal") ?>
-
-        <script>
-            addEventListener("DOMContentLoaded", () => {
-                LOADING.load(true);
-
-                setTimeout(() => LOADING.load(false), 1000)
-
-            })
-        </script>
+    </div>
 
 
-        <script>
-            function pindot(donwpayment, id) {
-                amount.value = donwpayment;
-                id_request.value = id;
-                // 1. Get the DOM element of the modal
-                const myModalEl = document.getElementById('paymentModal');
-                // 2. Create a new Bootstrap Modal instance
-                const modal = new bootstrap.Modal(myModalEl);
-                // 3. Call the 'show' method
-                modal.show();
-            }
-        </script>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const packagesSection = document.getElementById('packagesSection');
-                const orderSection = document.getElementById('orderSection');
-                const pendingOrdersContainer = document.getElementById('pendingOrdersContainer');
-                const completedOrdersContainer = document.getElementById('completedOrdersContainer');
-                const showPackagesBtn = document.getElementById('showPackagesBtn');
-                const showOrderBtn = document.getElementById('showOrderBtn');
-                const changePackageBtn = document.getElementById('changePackageBtn');
-                const showPackages2Btn = document.getElementById('showPackages2Btn');
-                const packagesSection2 = document.getElementById('packagesSection2');
+    <div class="modal fade" id="fullpayment" tabindex="-1" aria-labelledby="fullpayment" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fullpaymentmodal">💳 Payment Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="fullpaymentForm">
+                        <div class="mb-3">
+                            <label for="phoneNum" class="form-label">GCash Number</label>
+                            <input type="tel" class="form-control" id="phoneNum" name="phoneNum" placeholder="09XXXXXXXXX">
+                        </div>
+                        <div>
+                            <input type="hidden" name="id" id="requestid" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">full</label>
+                            <input type="number" class="form-control" name="amountpay" id="amountpay" placeholder="0.00" readonly>
+                        </div>
+                        <button type="button" id="otpsending" class="btn btn-outline-danger w-100 mb-3 fw-bold">📤 Send OTP</button>
+                        <div class="mb-3">
+                            <label for="otp" class="form-label">OTP Code</label>
+                            <input type="text" class="form-control" id="otps" name="otps" placeholder="Enter 6-digit OTP">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" id="submitForm" class="btn btn-danger fw-bold">✓ Confirm & Pay</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 
-                const selectBtns = document.querySelectorAll('.select-btn');
-                const backBtn = document.getElementById('backBtn');
-                const logoutBtn = document.getElementById('logoutBtn');
-                const userNameEl = document.getElementById('userName');
+    <?= import_packages("datatable", "tyrax", "loading", "ctr", "path", "twal") ?>
 
-                let pendingOrders = [];
-                let completedOrders = [];
+    <script>
+        addEventListener("DOMContentLoaded", () => {
+            LOADING.load(true);
+            setTimeout(() => LOADING.load(false), 1000)
+        })
+    </script>
 
-                // Set a hardcoded user name for demonstration purposes
-                userNameEl.textContent = 'John Doe';
+    <script>
+        function pindot(donwpayment, id) {
+            amount.value = donwpayment;
+            id_request.value = id;
+            const myModalEl = document.getElementById('paymentModal');
+            const modal = new bootstrap.Modal(myModalEl);
+            modal.show();
+        }
+    </script>
 
-                // Function to show the packages section and hide the order section
-                const showPackages = () => {
-                    packagesSection.classList.remove('hidden');
-                    orderSection.classList.add('hidden');
-                    backBtn.classList.add('hidden');
-                    packagesSection2.classList.add('hidden')
+    <script>
+        function clickpay(minusprice, id) {
+            amountpay.value = minusprice;
+            requestid.value = id;
+            const myModalEl = document.getElementById('fullpayment');
+            const modal = new bootstrap.Modal(myModalEl);
+            modal.show();
+        }
+    </script>
 
-                    showPackagesBtn.classList.add('bg-indigo-600', 'text-white');
-                    showPackagesBtn.classList.remove('bg-gray-700', 'text-gray-300');
-                    showOrderBtn.classList.add('bg-gray-700', 'text-gray-300');
-                    showOrderBtn.classList.remove('bg-indigo-600', 'text-white');
-                };
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const packagesSection = document.getElementById('packagesSection');
+            const orderSection = document.getElementById('orderSection');
+            const completedOrdersContainer = document.getElementById('completedOrdersContainer');
+            const showPackagesBtn = document.getElementById('showPackagesBtn');
+            const showOrderBtn = document.getElementById('showOrderBtn');
+            const changePackageBtn = document.getElementById('changePackageBtn');
+            const showPackages2Btn = document.getElementById('showPackages2Btn');
+            const packagesSection2 = document.getElementById('packagesSection2');
+            const backBtn = document.getElementById('backBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userNameEl = document.getElementById('userName');
 
-                // Function to show the order section and hide the packages section
-                const showOrder = () => {
-                    packagesSection.classList.add('hidden');
-                    orderSection.classList.remove('hidden');
-                    packagesSection2.classList.add('hidden')
+            let pendingOrders = [];
+            let completedOrders = [];
 
-                    backBtn.classList.remove('hidden');
-                    showOrderBtn.classList.add('bg-indigo-600', 'text-white');
-                    showOrderBtn.classList.remove('bg-gray-700', 'text-gray-300');
-                    showPackagesBtn.classList.add('bg-gray-700', 'text-gray-300');
-                    showPackagesBtn.classList.remove('bg-indigo-600', 'text-white');
-                    renderOrders();
-                };
+            userNameEl.textContent = 'John Doe';
 
-                // Show Packages 2 Section
-                const showPackages2 = () => {
-                    packagesSection.classList.add('hidden');
-                    orderSection.classList.add('hidden');
-                    packagesSection2.classList.remove('hidden');
-                    backBtn.classList.add('hidden');
-
-                    showPackages2Btn.classList.add('bg-indigo-600', 'text-white');
-                    showPackages2Btn.classList.remove('bg-gray-700', 'text-gray-300');
-
-                    showPackagesBtn.classList.add('bg-gray-700', 'text-gray-300');
-                    showPackagesBtn.classList.remove('bg-indigo-600', 'text-white');
-
-                    showOrderBtn.classList.add('bg-gray-700', 'text-gray-300');
-                    showOrderBtn.classList.remove('bg-indigo-600', 'text-white');
-                };
-
-
-                // Function to render the orders in their respective containers
-                const renderOrders = () => {
-                    pendingOrdersContainer.innerHTML = '';
-                    if (pendingOrders.length === 0) {
-                        pendingOrdersContainer.innerHTML = '<p class="text-gray-400 text-lg">You have no pending orders.</p>';
-                    } else {
-                        pendingOrders.forEach((order, index) => {
-                            const orderCard = document.createElement('div');
-                            orderCard.className = 'bg-gray-700 rounded-card p-6 shadow-lg flex justify-between items-center transition-transform hover-scale';
-                            orderCard.innerHTML = `
-                                <div>
-                                    <h4 class="text-xl font-bold">${order.name}</h4>
-                                    <p class="text-xl font-extrabold text-indigo-400 mt-1">$${order.price}<span class="text-base font-normal text-gray-400">/mo</span></p>
-                                    <span class="status-pill bg-yellow-400 text-yellow-900 mt-2 inline-block">Pending</span>
-                                </div>
-                                <button data-index="${index}" class="confirm-btn px-4 py-2 rounded-full font-semibold transition-colors duration-300 bg-green-500 hover:bg-green-600 text-white">
-                                    Complete Order
-                                </button>
-                            `;
-                            pendingOrdersContainer.appendChild(orderCard);
-                        });
-                    }
-
-                    completedOrdersContainer.innerHTML = '';
-                    if (completedOrders.length === 0) {
-                        completedOrdersContainer.innerHTML = '<p class="text-gray-400 text-lg">You have no completed orders.</p>';
-                    } else {
-                        completedOrders.forEach(order => {
-                            const orderCard = document.createElement('div');
-                            orderCard.className = 'bg-gray-700 rounded-card p-6 shadow-lg flex justify-between items-center transition-transform hover-scale';
-                            orderCard.innerHTML = `
-                                <div>
-                                    <h4 class="text-xl font-bold">${order.name}</h4>
-                                    <p class="text-xl font-extrabold text-indigo-400 mt-1">$${order.price}<span class="text-base font-normal text-gray-400">/mo</span></p>
-                                    <span class="status-pill bg-green-500 text-green-900 mt-2 inline-block">Complete</span>
-                                </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-green-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                            `;
-                            completedOrdersContainer.appendChild(orderCard);
-                        });
-                    }
-                };
-
-                // Event listener for package selection buttons
-                selectBtns.forEach(button => {
-                    button.addEventListener('click', () => {
-                        const packageName = button.dataset.packageName;
-                        const packagePrice = button.dataset.packagePrice;
-
-                        // Add the selected package to pending orders
-                        pendingOrders.push({
-                            name: packageName,
-                            price: packagePrice
-                        });
-
-                        // Highlight the selected card and un-highlight others
-                        document.querySelectorAll('.package-card').forEach(card => card.classList.remove('selected-package'));
-                        button.closest('.package-card').classList.add('selected-package');
-
-                        showOrder();
-                    });
-                });
-
+            const showPackages = () => {
+                packagesSection.classList.remove('hidden');
+                orderSection.classList.add('hidden');
+                packagesSection2.classList.add('hidden');
                 
+                showPackagesBtn.classList.add('nav-btn-active');
+                showPackagesBtn.classList.remove('nav-btn-inactive');
+                showOrderBtn.classList.add('nav-btn-inactive');
+                showOrderBtn.classList.remove('nav-btn-active');
+                showPackages2Btn.classList.add('nav-btn-inactive');
+                showPackages2Btn.classList.remove('nav-btn-active');
+            };
 
-                // Event listener for confirming a pending order
-                document.addEventListener('click', (event) => {
-                    if (event.target.classList.contains('confirm-btn')) {
-                        const index = event.target.dataset.index;
-                        const [confirmedOrder] = pendingOrders.splice(index, 1);
-                        completedOrders.push(confirmedOrder);
-                        renderOrders();
-                    }
-                });
+            const showOrder = () => {
+                packagesSection.classList.add('hidden');
+                orderSection.classList.remove('hidden');
+                packagesSection2.classList.add('hidden');
+                
+                showOrderBtn.classList.add('nav-btn-active');
+                showOrderBtn.classList.remove('nav-btn-inactive');
+                showPackagesBtn.classList.add('nav-btn-inactive');
+                showPackagesBtn.classList.remove('nav-btn-active');
+                showPackages2Btn.classList.add('nav-btn-inactive');
+                showPackages2Btn.classList.remove('nav-btn-active');
+                renderOrders();
+            };
 
-                // Event listeners for navigation buttons
-                showPackagesBtn.addEventListener('click', showPackages);
-                showOrderBtn.addEventListener('click', showOrder);
-                changePackageBtn.addEventListener('click', showPackages);
-                backBtn.addEventListener('click', showPackages);
-                showPackages2Btn.addEventListener('click', showPackages2);
-                logoutBtn.addEventListener('click', () => {
-                    console.log('User logged out.');
-                    // In a real application, you would handle the logout logic here
-                });
+            const showPackages2 = () => {
+                packagesSection.classList.add('hidden');
+                orderSection.classList.add('hidden');
+                packagesSection2.classList.remove('hidden');
+                
+                showPackages2Btn.classList.add('nav-btn-active');
+                showPackages2Btn.classList.remove('nav-btn-inactive');
+                showPackagesBtn.classList.add('nav-btn-inactive');
+                showPackagesBtn.classList.remove('nav-btn-active');
+                showOrderBtn.classList.add('nav-btn-inactive');
+                showOrderBtn.classList.remove('nav-btn-active');
+            };
 
-                // Initial state
-                showPackags();
-            });
-        </script>
+            const renderOrders = () => {
+               // document.getElementById('request_container').innerHTML = '';
+               // document.getElementById('completedOrdersContainer').innerHTML = '';
+               // document.getElementById('on_going').innerHTML = '';
+               // document.getElementById('completed').innerHTML = '';
 
-    </body>
-
-
-    </html>
-
-
-
-    <script>
-        addEventListener("DOMContentLoaded", function() {
-            tyrax.get({
-                url: "services/get",
-                response: (send) => {
-                    let data = send.data;
-                    data.forEach(column => {
-                        $id = column.servicesID;
-                        $sname = column.services_name;
-                        DOM.add_html("#packagesSection", `
-                        <div class="package-card bg-gray-700 rounded-card p-4 shadow-lg flex flex-col items-center transition-transform hover-scale">
-                    <img src="${column.img}" alt="Basic package image" class="w-full h-auto rounded-lg mb-4">
-                    <h3 class="text-2xl font-bold mb-1">${column.services_name}</h3>
-                    <p class="text-center text-gray-300 text-sm mb-4">${column.description}</p>
-                    <a href="${PATH.page("users/package", {id:$id,sname:$sname})}"><button class="btn" data-package-name="Basic" data-package-price="9" class="select-btn mt-auto w-full py-3 rounded-full font-bold transition-colors duration-300 bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg">
-                        <b>Select</b>
-                    </button></a>
-                </div>`)
-                    });
-                },
-
-            })
-        })
-    </script>
-
-    <script>
-        addEventListener("DOMContentLoaded", function() {
-            tyrax.get({
-                //inspect:true,
-                url: "request/get",
-                request: {
-                    user: localStorage.getItem("id")
-                },
-                response: (send) => {
-                    let data = send.data;
-                    if (data.length == 0) {
-                        DOM.add_html("#request_container", `
-        <span class="no-order"><b>No Orders</b></span>`);
-                        return;
-                    }
-                    data.forEach(column => {
-                        let container = "#";
-                        let status = column.status;
-                        let button = ``;
-                        if (status == 1) {
-                            container = '#request_container';
-                            button = `<button class="cancel-button" onclick="del(${column.id})" delid="${column.id}">❌ Cancel Order</button>`;
-                        }
-
-                        if (status == 2) {
-                            container = '#completedOrdersContainer';
-                            let canceled = `<button class="cancel-button" onclick="del(${column.id})" delid="${column.id}">❌ Cancel Order</button>`;
-                            button = `<button class="cancel-button"  onclick="pindot(${column.downpayment},${column.id})">Pay</button> ${canceled}`;
-                        }
-
-                        if (status == 3) {
-                            container = '#on_going';
-                        }
-
-                        DOM.add_html(container, `
-                            <h2>📸Order Requested</h2>
-                        <div class="order-details">
-                                <p><strong>Service Name:</strong> <span>${column.services_name}</span></p>
-                                <p><strong>Package:</strong> <span>${column.package_name}</span></p>
-                                <p><strong>Photographer:</strong> <span>${column.photographer}</span></p>
-                                <p><strong>date time:</strong> <span>${column.date_time}</span></p>
-                                <p><strong>Total Price:</strong> <span class="price">${column.price}</span></p>
-                                <p><strong>Down Payment:</strong> <span class="down-payment">${column.downpayment}</span></p>
+                // Render request orders
+                if (pendingOrders.length === 0) {
+                    
+                } else {
+                    pendingOrders.forEach((order, index) => {
+                        const orderCard = document.createElement('div');
+                        orderCard.className = 'order-container';
+                        orderCard.innerHTML = `
+                            <div class="order-header">📸 Order Requested</div>
+                            <div class="order-details">
+                                <div class="order-detail-row">
+                                    <span class="order-detail-label">Service Name:</span>
+                                    <span class="order-detail-value">${order.name}</span>
+                                </div>
+                                <div class="order-detail-row">
+                                    <span class="order-detail-label">Package:</span>
+                                    <span class="order-detail-value">${order.package}</span>
+                                </div>
+                                <div class="order-detail-row">
+                                    <span class="order-detail-label">Total Price:</span>
+                                    <span class="order-price">₱${order.price}</span>
+                                </div>
                             </div>
-                            <div class="cancel-button-container">
-                                ${button}  
-                            </div>`)
+                            <div class="order-actions">
+                                <button class="cancel-button" onclick="del(${index})">❌ Cancel Order</button>
+                            </div>
+                        `;
+                       // document.getElementById('request_container').appendChild(orderCard);
+                    });
+                }
+
+                // Render completed orders (for demo purposes)
+                if (completedOrders.length === 0) {
+                    //document.getElementById('completedOrdersContainer').innerHTML = '<div class="no-order">No pending payments</div>';
+                }
+            };
+
+            const selectBtns = document.querySelectorAll('.select-btn');
+            selectBtns.forEach(button => {
+                button.addEventListener('click', () => {
+                    const card = button.closest('.package-card');
+                    const packageName = card.querySelector('.package-name').textContent;
+                    const packageDesc = card.querySelector('.package-description').textContent;
+
+                    pendingOrders.push({
+                        name: packageName,
+                        package: packageDesc,
+                        price: '2,999'
                     });
 
+                    document.querySelectorAll('.package-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
 
+                    showOrder();
+                });
+            });
 
-                },
+            showPackagesBtn.addEventListener('click', showPackages);
+            showOrderBtn.addEventListener('click', showOrder);
+            changePackageBtn.addEventListener('click', showPackages);
+            showPackages2Btn.addEventListener('click', showPackages2);
 
-            })
-        })
+            showPackages();
+        });
     </script>
-
-
 
     <script>
         function del(pid) {
-
             twal.ask({
-
-                text: "Do you want to proceed cancel your order?"
+                text: "Do you want to cancel this order?"
             }).then((result) => {
                 if (result.confirm) {
                     tyrax.post({
-                        //inspect:true,
                         url: "orders/delete",
-                        request: {
-                            id: pid
-                        },
+                        request: { id: pid },
                         response: function(send) {
                             if (send.code == 200) {
                                 twal.ok({
@@ -508,6 +981,174 @@
             });
         }
     </script>
+
+    <script>
+        addEventListener("DOMContentLoaded", function() {
+            tyrax.get({
+                url: "services/get",
+                response: (send) => {
+                    let data = send.data;
+                    data.forEach(column => {
+                        $id = column.servicesID;
+                        $sname = column.services_name;
+                        DOM.add_html("#packagesSection", `
+                        <div class="package-card">
+                            <img src="${column.img}" alt="${column.services_name}" class="package-image">
+                            <h3 class="package-name">${column.services_name}</h3>
+                            <p class="package-description">${column.description}</p>
+                            <a href="${PATH.page("users/package", {id:$id,sname:$sname})}">
+                                <button class="select-btn"><span>Select Package</span></button>
+                            </a>
+                        </div>`)
+                    });
+                },
+            })
+        })
+    </script>
+
+    <script>
+        addEventListener("DOMContentLoaded", function() {
+            tyrax.get({
+                url: "request/get",
+                //inspect:true,
+                request: {
+                    user: localStorage.getItem("id")
+                },
+                response: (send) => {
+                    let data = send.data;
+                    if (data.length == 0) {
+                        return;
+                    }
+                    //document.getElementById('request_container').innerHTML = '<div class="no-order">No request orders yet</div>';
+                    data.forEach(column => {
+                        let container = "#";
+                        let status = column.status;
+                        let button = ``;
+                        let minusprice = column.price - column.downpayment;
+                        
+                        
+                        if (status == 1) {
+                            container = '#request_container';
+                            button = `<button class="cancel-button" onclick="del(${column.id})">❌ Cancel Order</button>`;
+                        }
+
+                        if (status == 2) {
+                            container = '#completedOrdersContainer';
+                            let canceled = `<button class="cancel-button" onclick="del(${column.id})">❌ Cancel</button>`;
+                            button = `<button class="cancel-button action-button" onclick="pindot(${column.downpayment},${column.id})">💳 Pay Now</button> ${canceled}`;
+                        }
+
+                        if (status == 3) {
+                            container = '#on_going';
+                            button = `<button class="action-button">🎬 In Progress</button>`;
+                        }
+                        
+                        if (status == 4) {
+                            container = '#completed';
+                            button = `<button onclick="clickpay(${minusprice},${column.id})" class="action-button">Pay</button>`;
+                        }
+
+                        if (status == 5) {
+                            container = '#rates';
+                            button = `<button class="action-button">Rate</button>`;
+                        }
+
+                        document.querySelector(container).innerHTML= ""
+                        CTR.add_html(container, `
+                            <div class="order-container">
+                                <div class="order-header">📸 Order Details</div>
+                                <div class="order-details">
+                                    <div class="order-detail-row">
+                                        <span class="order-detail-label">Service:</span>
+                                        <span class="order-detail-value">${column.services_name}</span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="order-detail-label">Package:</span>
+                                        <span class="order-detail-value">${column.package_name}</span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="order-detail-label">Photographer:</span>
+                                        <span class="order-detail-value">${column.photographer}</span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="order-detail-label">Date & Time:</span>
+                                        <span class="order-detail-value">${column.date_time}</span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="order-detail-label">Total Price:</span>
+                                        <span class="order-price">₱${column.price}</span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="order-detail-label">Down Payment:</span>
+                                        <span class="order-price">₱${column.downpayment}</span>
+                                    </div>
+                                </div>
+                                <div class="order-actions">
+                                    ${button}  
+                                </div>
+                            </div>`)
+                    });
+                },
+            })
+        })
+    </script>
+
+
+
+
+<script>
+        addEventListener("DOMContentLoaded", () => {
+            otpsending.addEventListener("click", () => {
+                smsSend()
+            })
+
+            function smsSend() {
+                $data = {
+                    phoneNum: phoneNum.value,
+                    amountpay: amountpay.value
+                }
+                tyrax.post({
+                    url: "fullpay/otpsend",
+                    data: $data,
+                    //test:true,
+                    wait: () => {
+                        window.LOADING.load(true)
+                    },
+                    done: () => {
+                        window.LOADING.load(false)
+                    },
+                    response: (send) => {
+                        if (send.code == 200) {
+                            twal.ok("OTP Sent Successfully")
+                        } else {
+                            twal.err(send.message);
+                        }
+                    }
+                })
+            }
+
+            CTR.submit("#fullpaymentForm", (formdata) => {
+                tyrax.post({
+                    url: "fullpay/fullpayment",
+                    data: formdata,
+                    //test:true,
+                    response: (send) => {
+                        if (send.code == 200) {
+                            twal.ok("Payment Confirmed").then(() => location.href = PATH.page("users/home"));
+                        } else {
+                            twal.err(send.message);
+                        }
+                    }
+                });
+            });
+        })
+    </script>
+
+
+
+
+
+
 
     <script>
         addEventListener("DOMContentLoaded", () => {
@@ -531,24 +1172,22 @@
                     },
                     response: (send) => {
                         if (send.code == 200) {
-                            twal.ok("OTP Sent")
+                            twal.ok("OTP Sent Successfully")
                         } else {
                             twal.err(send.message);
                         }
-
                     }
-
                 })
             }
-
 
             CTR.submit("#bookingForm", (formdata) => {
                 tyrax.post({
                     url: "payment/pay",
                     data: formdata,
+                    //test:true,
                     response: (send) => {
                         if (send.code == 200) {
-                            twal.ok("Payment sent").then(() => location.href = PATH.page("users/home"));
+                            twal.ok("Payment Confirmed").then(() => location.href = PATH.page("users/home"));
                         } else {
                             twal.err(send.message);
                         }
@@ -558,196 +1197,6 @@
         })
     </script>
 
+</body>
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
-            /* White background */
-            color: #000000;
-            /* Black text */
-        }
-
-        .rounded-card {
-            border-radius: 1.5rem;
-            border: 2px solid #e60000;
-            /* Red border */
-            background-color: #ffffff;
-            /* White background */
-            color: #000000;
-            /* Black text */
-        }
-
-        .transition-transform {
-            transition-property: transform;
-            transition-duration: 300ms;
-        }
-
-        .hover-scale:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 10px rgba(230, 0, 0, 0.3);
-            /* Soft red shadow */
-        }
-
-        .selected-package {
-            border: 3px solid #ff0000;
-            /* Highlight selected card */
-            box-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
-        }
-
-        /* BUTTONS */
-        .btn,
-        button,
-        .px-6.py-3,
-        .cancel-button,
-        .confirm-btn {
-            background-color: #e60000 !important;
-            /* Red */
-            color: #ffffff !important;
-            /* White text */
-            border: none;
-            border-radius: 30px;
-            font-weight: bold;
-            transition: all 0.3s ease-in-out;
-            height: 55px;
-            width: 200px;
-        }
-
-        .btn:hover,
-        button:hover,
-        .cancel-button:hover,
-        .confirm-btn:hover {
-            background-color: #cc0000 !important;
-            /* Darker red */
-        }
-
-        /* Header icons and text */
-        header {
-            color: #000000;
-        }
-
-        svg {
-            color: #e60000;
-        }
-
-        /* Card Containers */
-        .order-container {
-            background-color: #ffffff;
-            color: #000000;
-            border: 2px solid #e60000;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 10px rgba(230, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .order-container h2 {
-            text-align: center;
-            color: #e60000;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-
-        .order-details {
-            border-top: 2px solid #e60000;
-            padding-top: 20px;
-        }
-
-        .order-details p {
-            font-size: 1.1em;
-            color: #000000;
-            margin: 15px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .order-details p strong {
-            color: #e60000;
-        }
-
-        .order-details .price,
-        .order-details .down-payment {
-            font-weight: bold;
-            color: #e60000;
-        }
-
-        /* Section titles */
-        h2,
-        h3 {
-            color: #000000;
-        }
-
-        .no-order {
-            color: #e60000;
-            font-weight: bold;
-        }
-
-        /* Modal */
-        .modal-content {
-            background-color: #ffffff;
-            color: #000000;
-            border: 2px solid #e60000;
-            border-radius: 15px;
-        }
-
-        .modal-title,
-        .form-label {
-            color: #000000;
-        }
-
-        .btn-close {
-            filter: invert(1);
-            /* Make close button visible on white background */
-        }
-
-        /* Navbar and controls */
-        #showPackagesBtn,
-        #showOrderBtn,
-        #changePackageBtn {
-            background-color: #e60000;
-            color: #ffffff;
-        }
-
-        #showPackagesBtn:hover,
-        #showOrderBtn:hover,
-        #changePackageBtn:hover {
-            background-color: #cc0000;
-        }
-
-        /* Status pills */
-        .status-pill {
-            border-radius: 9999px;
-            font-weight: bold;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            padding: 0.25rem 0.75rem;
-            color: #ffffff;
-            background-color: #e60000;
-        }
-
-        /* Remove dark classes from Tailwind overrides */
-        .bg-gray-900,
-        .bg-gray-800,
-        .bg-gray-700 {
-            background-color: #ffffff !important;
-        }
-
-        .text-gray-100,
-        .text-gray-200,
-        .text-gray-300,
-        .text-gray-400 {
-            color: #000000 !important;
-        }
-
-        .text-indigo-400,
-        .text-indigo-600 {
-            color: #e60000 !important;
-        }
-
-        .shadow-lg {
-            box-shadow: 0 4px 10px rgba(230, 0, 0, 0.1);
-        }
-    </style>
+</html>

@@ -21,6 +21,7 @@
                 <a id="proj" href="<?= page('admin/services.php') ?>" class="nav-item nav-link text-dark"><i class="fa fa-tags me-2"></i>Services</a>
                 <a id="profile" href="<?= page('admin/profile.php') ?>" class="nav-item nav-link text-dark"><i class="fa fa-user me-2"></i>Photographers</a>
                 <a id="proj" href="<?= page('admin/projmanagement.php') ?>" class="nav-item nav-link text-dark"><i class="fa fa-cog me-2"></i>Projects</a>
+                <a id="proj" href="<?= page('admin/calendar.php') ?>" class="dropdown-item text-dark"><i class="fa fa-calendar-alt me-2"></i> Calendar</a>
             </div>
 
             <div class="nav-item dropdown">
@@ -33,13 +34,7 @@
                 </div>
             </div>
 
-            <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle text-dark" data-bs-toggle="dropdown"><i class="fa fa-calendar-check me-2"></i>Bookings</a>
-                <div class="dropdown-menu border-0">
-                    <a href="<?= page('admin/session.php') ?>" class="dropdown-item text-dark"><i class="fa fa-camera me-2"></i> Sessions</a>
-                    <a href="<?= page('admin/calendar.php') ?>" class="dropdown-item text-dark"><i class="fa fa-calendar-alt me-2"></i> Calendar</a>
-                </div>
-            </div>
+            
 
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle text-dark" data-bs-toggle="dropdown"><i class="fa fa-credit-card me-2"></i>Payments</a>
@@ -153,17 +148,17 @@
     .sidebar .navbar .navbar-nav .nav-link:hover,
     .sidebar .navbar .navbar-nav .nav-link.active {
         background: #e9ecef;
-        color: #0d6efd !important;
+        color: red !important;
         border-radius: 5px;
     }
 
     .sidebar .navbar .navbar-nav .nav-link.active i {
-        color: #0d6efd !important;
+        color: red !important;
     }
 
     /* Specific style for dropdown links inside the active dropdown */
     .sidebar .navbar .navbar-nav .dropdown-menu .dropdown-item.active {
-        background-color: #0d6efd;
+        background-color: red;
         color: #ffffff !important;
     }
 
@@ -174,11 +169,11 @@
     /* Ensure the main dropdown toggle itself looks active when an inner link is active */
     .sidebar .navbar .navbar-nav .nav-item.dropdown .nav-link.active-parent {
         background: #e9ecef;
-        color: #0d6efd !important;
+        color: red !important;
         border-radius: 5px;
     }
 
     .sidebar .navbar .navbar-nav .nav-item.dropdown .nav-link.active-parent i {
-        color: #0d6efd !important;
+        color: red !important;
     }
 </style>

@@ -6,9 +6,9 @@
 
 use Classes\Request;
 use Classes\Response;
-use Tables\Coverage;
+use Tables\Customizationpackage;
 
-$coverage = Coverage::getAll(["available"=>1]);
+$coverage = Customizationpackage::getAll(["available"=>1, "category"=>"cov"]);
 
 Response::code(200)->data($coverage)->send();
 

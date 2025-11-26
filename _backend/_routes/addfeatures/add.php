@@ -6,7 +6,7 @@
 
 use Classes\Request;
 use Classes\Response;
-use Tables\Additionalfeatures;
+use Tables\Customizationpackage;
 
 $fname = Request::post("fname");
 $fprice = Request::post("fprice");
@@ -24,11 +24,12 @@ if(!$description){
 }
 
 
-$insert = Additionalfeatures::insert([
-    "fname" => $fname,
-    "fprice" => $fprice,
+$insert = Customizationpackage::insert([
+    "name" => $fname,
+    "price" => $fprice,
     "description" => $description,
-    "available" => "1"
+    "available" => "1",
+    "category" => "feat"
 ]);
 
 Response::code(200)->message("Data Added Successfully")->send();

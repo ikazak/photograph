@@ -5,15 +5,13 @@
 
 use Classes\Request;
 use Classes\Response;
-use Tables\Preeventsession;
+use Tables\Customizationpackage;
 
 $id = Request::post("id");
 
-$result = Preeventsession::update(["id"=>$id], ["available"=>0]);
+$result = Customizationpackage::update(["id"=>$id], ["available"=>0]);
 
 Response::code(200)->message("Deleted Successfully")->send();
-
-
 
 
 ?>

@@ -23,6 +23,11 @@
             <?= include_page('photoex/phnavbar') ?>
             <!-- Navbar End -->
 
+            <!-- NEW: Calendar Title Section -->
+            <div class="calendar-title">
+                <h1>📅 Availability Calendar</h1>
+                <p>Manage your schedule and set unavailable dates</p>
+            </div>
 
             <div class="calendar-container">
                 <div class="calendar-header">
@@ -50,8 +55,6 @@
                     </div>
                 </div>
             </div>
-
-
 
         </div>
         <!-- Content End -->
@@ -317,47 +320,72 @@
 
 
 <style>
-    .btn-clear {
-        padding: 10px 20px;
-        border: 1px solid #dc3545;
-        /* Red border */
-        background-color: transparent;
-        color: #dc3545;
-        /* Red text */
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
+    /* NEW: Calendar Title Section */
+    .calendar-title {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
     }
 
-    .btn-clear:hover {
-        background-color: #f8d7da;
-        /* Light red hover */
+    .calendar-title h1 {
+        font-size: 2.5em;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+        text-shadow: 0 4px 6px rgba(255, 68, 68, 0.3);
     }
 
+    .calendar-title p {
+        font-size: 1.1em;
+        color: #666;
+        font-weight: 300;
+    }
+
+    /* Enhanced Calendar Container */
     .calendar-container {
         max-width: 1200px;
-        /* Optimal reading width */
         margin: 40px auto;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         background-color: #ffffff;
         font-family: Arial, sans-serif;
-        border-color: solid 1px #333;
+        border: 2px solid #ff4444;
     }
 
     .calendar-header {
         display: flex;
         justify-content: center;
-        gap: 15px;
-        margin-bottom: 20px;
+        gap: 20px;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #ff4444;
     }
 
     .control-select {
-        padding: 8px 15px;
+        padding: 12px 20px;
         font-size: 1.1em;
-        border: 1px solid #ddd;
-        border-radius: 6px;
+        border: 2px solid #000;
+        border-radius: 8px;
+        background: #fff;
+        color: #000;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .control-select:hover {
+        border-color: #ff4444;
+        background: #fff5f5;
+    }
+
+    .control-select:focus {
+        outline: none;
+        border-color: #ff4444;
+        box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.2);
     }
 
     /* --- Calendar Grid Styles --- */
@@ -366,61 +394,93 @@
     .days-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        /* 7 equal columns */
+        gap: 8px;
         text-align: center;
     }
 
+    .weekdays-grid {
+        margin-bottom: 15px;
+    }
+
     .weekdays-grid span {
-        padding: 10px 0;
-        font-weight: bold;
-        color: #333;
+        padding: 15px 5px;
+        font-weight: 700;
+        font-size: 1em;
+        color: #fff;
+        background: #000;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     .day {
         padding: 25px 5px;
-        border: 1px solid #f0f0f0;
-        /* Light borders */
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
         cursor: pointer;
-        font-size: 1em;
-        font-weight: 500;
-        transition: background-color 0.2s;
+        font-size: 1.1em;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: #fff;
+        color: #000;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .day::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 68, 68, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .day:hover:not(.past-day)::before {
+        left: 100%;
+    }
+
+    .day:hover:not(.past-day) {
+        border-color: #ff4444;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(255, 68, 68, 0.3);
+        background: #fff5f5;
     }
 
     /* --- Day States (Crucial Logic Styling) --- */
 
-    .day:hover:not(.past-day) {
-        background-color: #f6f6f6;
-    }
-
     /* 1. Unclickable/Past Days */
     .past-day {
-        background-color: #fafafa;
-        /* Light gray background */
-        color: #b0b0b0;
-        /* Faded text */
+        background: #f5f5f5;
+        color: #999;
         cursor: not-allowed;
         pointer-events: none;
-        /* Ensures no hover/click effects */
+        border-color: #e0e0e0;
     }
 
     /* 2. Today (optional, but helpful) */
     .today {
-        border: 2px solid #007bff;
-        /* Bright border for today */
-        font-weight: bold;
+        border: 3px solid #ff4444;
+        background: linear-gradient(135deg, #fff 0%, #ffebeb 100%);
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
     }
 
     /* 3. Unavailable/Blocked Days */
     .unavailable-day {
-        background-color: #ffeded;
-        /* Very light red */
-        color: #cc3333;
-        /* Darker red text */
-        font-weight: bold;
+        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+        color: #fff;
+        font-weight: 700;
+        border-color: #cc0000;
+        box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
     }
 
     .unavailable-day:hover:not(.past-day) {
-        background-color: #ffe0e0;
+        background: linear-gradient(135deg, #ff6666 0%, #dd0000 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 68, 68, 0.5);
     }
 
 
@@ -432,83 +492,157 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        /* Semi-transparent black background */
+        background-color: rgba(0, 0, 0, 0.8);
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: 1000;
+        backdrop-filter: blur(5px);
     }
 
     .modal-content {
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
+        background: #fff;
+        padding: 35px;
+        border-radius: 16px;
         width: 90%;
-        max-width: 400px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        max-width: 450px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        border: 3px solid #ff4444;
+        animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
     }
 
     .modal-content h3 {
-        margin-top: 0;
-        color: #333;
-        border-bottom: 2px solid #eee;
-        padding-bottom: 10px;
+        margin: 0 0 20px 0;
+        color: #000;
+        font-size: 1.8em;
+        font-weight: 700;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #ff4444;
     }
 
     .modal-date {
-        font-weight: bold;
-        color: #007bff;
-        margin-bottom: 15px;
+        font-weight: 700;
+        color: #ff4444;
+        margin-bottom: 20px;
+        font-size: 1.2em;
     }
 
     #reason-input {
         width: 100%;
-        height: 100px;
-        padding: 10px;
-        margin-bottom: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        height: 120px;
+        padding: 15px;
+        margin-bottom: 25px;
+        border: 2px solid #000;
+        border-radius: 10px;
         resize: vertical;
+        font-size: 1em;
+        font-family: inherit;
+        transition: all 0.3s ease;
         box-sizing: border-box;
-        /* Include padding/border in the element's total width/height */
+    }
+
+    #reason-input:focus {
+        outline: none;
+        border-color: #ff4444;
+        box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.2);
     }
 
     .modal-actions {
         display: flex;
         justify-content: flex-end;
-        gap: 10px;
+        gap: 12px;
+        flex-wrap: wrap;
     }
 
     .btn-save,
-    .btn-cancel {
-        padding: 10px 20px;
+    .btn-cancel,
+    .btn-clear {
+        padding: 12px 24px;
         border: none;
-        border-radius: 5px;
+        border-radius: 8px;
         cursor: pointer;
-        font-weight: bold;
+        font-weight: 700;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .btn-save {
-        background-color: #007bff;
-        color: white;
+        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+        color: #fff;
+        border: 2px solid #cc0000;
     }
 
     .btn-save:hover {
-        background-color: #0056b3;
+        background: linear-gradient(135deg, #ff6666 0%, #dd0000 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255, 68, 68, 0.4);
     }
 
     .btn-cancel {
-        background-color: #e9e9e9;
-        color: #333;
+        background: #000;
+        color: #fff;
+        border: 2px solid #000;
     }
 
     .btn-cancel:hover {
-        background-color: #dcdcdc;
+        background: #333;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-clear {
+        background: transparent;
+        color: #ff4444;
+        border: 2px solid #ff4444;
+    }
+
+    .btn-clear:hover {
+        background: #ff4444;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255, 68, 68, 0.4);
     }
 
     /* Utility to hide the modal */
     .hidden {
         display: none;
+    }
+
+    @media (max-width: 768px) {
+        .calendar-title h1 {
+            font-size: 2em;
+        }
+
+        .calendar-container {
+            padding: 20px;
+        }
+
+        .day {
+            padding: 20px 5px;
+            font-size: 1em;
+        }
+
+        .modal-actions {
+            flex-direction: column;
+        }
+
+        .btn-save,
+        .btn-cancel,
+        .btn-clear {
+            width: 100%;
+        }
     }
 </style>

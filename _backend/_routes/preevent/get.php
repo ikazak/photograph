@@ -4,10 +4,10 @@
 
 use Classes\Response;
 use Classes\Request;
-use Tables\Preeventsession;
+use Tables\Customizationpackage;
 
 
-$preeventsession = Preeventsession::getAll(["available" => 1]);
+$preeventsession = Customizationpackage::getAll(["available" => 1, "category"=> "pre"]);
 Response::code(200)->data($preeventsession)->send();
 
 

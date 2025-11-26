@@ -2,6 +2,8 @@
 
 namespace Classes;
 
+use Exception;
+
 /**
  * This is Basixs BaseTable Extension
  * this is like table models ORM
@@ -11,16 +13,18 @@ class BaseTable
 {
     protected $pdo;
     protected $table;
+    protected $create_date;
+    protected $update_date;
     protected $fillable = [];
     protected $guarded = [];
     protected $timestamps = true;
     protected $hidden = [];
-    protected $rowcount;
-    protected $lastQuery;
-    protected $lastBindings;
-    protected $totalRecords;
-    protected $totalPages;
-    protected $currentPage;
+    private static $rowcount;
+    private static $lastQuery;
+    private static $lastBindings;
+    private static $totalRecords;
+    private static $totalPages;
+    private static $currentPage;
 
     protected $attributes = [];
 
@@ -113,13 +117,13 @@ class BaseTable
         if (isset($options['limit'])) $sql .= " LIMIT " . (int)$options['limit'];
         if (isset($options['offset'])) $sql .= " OFFSET " . (int)$options['offset'];
 
-        $self->lastQuery = $sql;
-        $self->lastBindings = $bindings;
+        self::$lastQuery = $sql;
+        self::$lastBindings = $bindings;
 
         $stmt = $self->pdo->prepare($sql);
         $stmt->execute($bindings);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        $self->rowcount = $stmt->rowCount();
+        self::$rowcount = $stmt->rowCount();
         $stmt->closeCursor();
 
         return array_map([$self, 'hydrate'], $rows);
@@ -132,11 +136,46 @@ class BaseTable
         return $data[0] ?? [];
     }
 
-    public static function get(array $where, int|array|null $extra = null): array
+    public static function count(array|null $where = null, array|int|null $extra = null): int|null
+    {
+        $find = [];
+        if (is_null($where)) {
+            $find = self::getAll();
+        } else {
+            $find = self::find($where, $extra);
+        }
+        return sizeof($find);
+    }
+
+    public static function get(array $where, array $extra = []): array
     {
         $self = static::instance();
-        $data = $self->find($where, $extra);
-        return empty($data) ? [] : $data;
+        $bindings = [];
+        $sql = "SELECT * FROM `{$self->table}`";
+
+        if (!empty($where)) {
+            [$whereClause, $bindings] = $self->buildWhere($where);
+            $sql .= " WHERE $whereClause";
+        }
+
+        if (isset($extra['group by'])) $sql .= " GROUP BY " . $extra['group by'];
+        if (isset($extra['order by'])) $sql .= " ORDER BY " . $extra['order by'];
+        if (isset($extra['limit'])) $sql .= " LIMIT " . (int)$extra['limit'];
+        if (isset($extra['offset'])) $sql .= " OFFSET " . (int)$extra['offset'];
+
+        self::$lastQuery = $sql;
+        self::$lastBindings = $bindings;
+
+        $stmt = $self->pdo->prepare($sql);
+        foreach ($bindings as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->execute();
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        self::$rowcount = $stmt->rowCount();
+        $stmt->closeCursor();
+
+        return $rows ? array_map([$self, 'hydrate'], $rows) : [];
     }
 
     public static function getAll(array|null $where = null, array|int|null $extra = null)
@@ -200,28 +239,23 @@ class BaseTable
         }
 
         if ($limit !== null) {
-            $sql .= " LIMIT :limit";
-            if ($offset !== null) $sql .= " OFFSET :offset";
+            $limit = (int)$limit;
+            $offset = (int)($offset ?? 0);
+            $sql .= " LIMIT {$limit} OFFSET {$offset}";
         }
 
-        $self->lastQuery = $sql;
-        $self->lastBindings = $bindings;
+        self::$lastQuery = $sql;
+        self::$lastBindings = $bindings;
 
         $stmt = $self->pdo->prepare($sql);
         foreach ($bindings as $key => $val) {
             $stmt->bindValue($key, $val);
         }
-        if ($limit !== null) {
-            $stmt->bindValue(":limit", $limit, \PDO::PARAM_INT);
-            if ($offset !== null) {
-                $stmt->bindValue(":offset", $offset, \PDO::PARAM_INT);
-            }
-        }
 
         $stmt->execute();
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $rc = $stmt->rowCount();
-        $self->rowcount = $rc;
+        self::$rowcount = $rc;
         $stmt->closeCursor();
 
         $countSql = "SELECT COUNT(*) as cnt FROM `{$tbl}`" . ($whereClause ? " WHERE $whereClause" : "");
@@ -230,9 +264,9 @@ class BaseTable
         $total = (int)$countStmt->fetch(\PDO::FETCH_ASSOC)['cnt'];
         $countStmt->closeCursor();
 
-        $self->totalRecords = $total;
-        $self->totalPages = ($limit !== null && $limit > 0) ? (int)ceil($total / $limit) : 1;
-        $self->currentPage = $page;
+        self::$totalRecords = $total;
+        self::$totalPages = ($limit !== null && $limit > 0) ? (int)ceil($total / $limit) : 1;
+        self::$currentPage = $page;
 
         return $rc > 0 ? array_map([$self, 'hydrate'], $rows) : [];
     }
@@ -241,13 +275,15 @@ class BaseTable
     {
         $clauses = [];
         foreach ($where as $key => $val) {
-            if (strtolower($key) === "or") {
-                [$subClause, $subBindings] = $this->buildWhere($val, "OR", $bindings, $paramIndex);
-                $clauses[] = "($subClause)";
-                $bindings = array_merge($bindings, $subBindings);
-            } elseif (strtolower($key) === "and") {
-                [$subClause, $subBindings] = $this->buildWhere($val, "AND", $bindings, $paramIndex);
-                $clauses[] = "($subClause)";
+            if (strtolower($key) === "or" || strtolower($key) === "and") {
+                $subClauses = [];
+                $subBindings = [];
+                foreach ($val as $cond) {
+                    [$clause, $bind] = $this->buildWhere($cond, strtoupper($key), $bindings, $paramIndex);
+                    if ($clause) $subClauses[] = $clause;
+                    $subBindings = array_merge($subBindings, $bind);
+                }
+                $clauses[] = "(" . implode(" " . strtoupper($key) . " ", $subClauses) . ")";
                 $bindings = array_merge($bindings, $subBindings);
             } elseif (strtolower($key) === "like") {
                 foreach ($val as $col => $v) {
@@ -293,9 +329,9 @@ class BaseTable
     }
 
 
-    public function totalRows(): int
+    public static function totalRows(): int
     {
-        return $this->totalRecords ?? 0;
+        return self::$totalRecords ?? 0;
     }
 
     public static function select(string|array|null $columns = null, array $extra = [])
@@ -313,26 +349,26 @@ class BaseTable
         if (isset($extra['limit'])) $sql .= " LIMIT " . (int)$extra['limit'];
         if (isset($extra['offset'])) $sql .= " OFFSET " . (int)$extra['offset'];
 
-        $self->lastQuery = $sql;
-        $self->lastBindings = [];
+        self::$lastQuery = $sql;
+        self::$lastBindings = [];
 
         $stmt = $self->pdo->prepare($sql);
         $stmt->execute();
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        $self->rowcount = $stmt->rowCount();
+        self::$rowcount = $stmt->rowCount();
         $stmt->closeCursor();
 
-        return $self->rowcount > 0 ? array_map([$self, 'hydrate'], $rows) : [];
+        return self::$rowcount > 0 ? array_map([$self, 'hydrate'], $rows) : [];
     }
 
-    public function totalPages(): int
+    public static function totalPages(): int
     {
-        return $this->totalPages ?? 1;
+        return self::$totalPages ?? 1;
     }
 
-    public function currentPage(): int
+    public static function currentPage(): int
     {
-        return $this->currentPage ?? 1;
+        return self::$currentPage ?? 1;
     }
 
     public static function first(array $conditions = [])
@@ -340,21 +376,21 @@ class BaseTable
         $self = static::instance();
         if (empty($conditions)) {
             $sql = "SELECT * FROM `{$self->table}` LIMIT 1";
-            $self->lastQuery = $sql;
-            $self->lastBindings = [];
+            self::$lastQuery = $sql;
+            self::$lastBindings = [];
             $stmt = $self->pdo->prepare($sql);
             $stmt->execute();
         } else {
             $whereClause = implode(' AND ', array_map(fn($col) => "`$col` = :$col", array_keys($conditions)));
             $sql = "SELECT * FROM `{$self->table}` WHERE $whereClause LIMIT 1";
-            $self->lastQuery = $sql;
-            $self->lastBindings = $conditions;
+            self::$lastQuery = $sql;
+            self::$lastBindings = $conditions;
             $stmt = $self->pdo->prepare($sql);
             $stmt->execute($conditions);
         }
 
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-        $self->rowcount = $stmt->rowCount();
+        self::$rowcount = $stmt->rowCount();
         $stmt->closeCursor();
 
         return $row ? $self->hydrate($row) : [];
@@ -365,21 +401,21 @@ class BaseTable
         $self = static::instance();
         if (empty($conditions)) {
             $sql = "SELECT * FROM `{$self->table}` ORDER BY id DESC LIMIT 1";
-            $self->lastQuery = $sql;
-            $self->lastBindings = [];
+            self::$lastQuery = $sql;
+            self::$lastBindings = [];
             $stmt = $self->pdo->prepare($sql);
             $stmt->execute();
         } else {
             $whereClause = implode(' AND ', array_map(fn($col) => "`$col` = :$col", array_keys($conditions)));
             $sql = "SELECT * FROM `{$self->table}` WHERE $whereClause ORDER BY id DESC LIMIT 1";
-            $self->lastQuery = $sql;
-            $self->lastBindings = $conditions;
+            self::$lastQuery = $sql;
+            self::$lastBindings = $conditions;
             $stmt = $self->pdo->prepare($sql);
             $stmt->execute($conditions);
         }
 
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-        $self->rowcount = $stmt->rowCount();
+        self::$rowcount = $stmt->rowCount();
         $stmt->closeCursor();
 
         return $row ? $self->hydrate($row) : [];
@@ -389,21 +425,29 @@ class BaseTable
     {
         $self = static::instance();
         $data = $self->filterFillable($data);
-        if ($self->timestamps) {
+        $ts = $self->timestamps;
+        if ($ts) {
             $now = date('Y-m-d H:i:s');
-            $data['created_at'] = $now;
-            $data['updated_at'] = $now;
+            if (is_array($ts)) {
+                $data[$ts['created'] ?? 'created_at'] = $now;
+                $data[$ts['updated'] ?? 'updated_at'] = $now;
+            } else if (is_bool($ts)) {
+                $data['created_at'] = $now;
+                $data['updated_at'] = $now;
+            } else {
+                throw new Exception("Base table timestamps should only boolean or array");
+            }
         }
 
         $columns = array_map(fn($col) => "`$col`", array_keys($data));
         $placeholders = array_map(fn($col) => ":$col", array_keys($data));
         $sql = "INSERT INTO `{$self->table}` (" . implode(",", $columns) . ") VALUES (" . implode(",", $placeholders) . ")";
-        $self->lastQuery = $sql;
-        $self->lastBindings = $data;
+        self::$lastQuery = $sql;
+        self::$lastBindings = $data;
 
         $stmt = $self->pdo->prepare($sql);
         $stmt->execute($data);
-        $self->rowcount = 1;
+        self::$rowcount = 1;
         $stmt->closeCursor();
 
         $data['_id'] = $self->pdo->lastInsertId();
@@ -419,7 +463,16 @@ class BaseTable
     {
         $self = static::instance();
         $data = $self->filterFillable($data);
-        if ($self->timestamps) $data['updated_at'] = date('Y-m-d H:i:s');
+        $ts = $self->timestamps;
+        if ($ts) {
+            if (is_array($ts)) {
+                $data[$ts['updated'] ?? 'updated_at'] = date('Y-m-d H:i:s');
+            } else if (is_bool($ts)) {
+                $data['updated_at'] = date('Y-m-d H:i:s');
+            } else {
+                throw new Exception("Base table timestamps should only boolean or array");
+            }
+        }
 
         $setClause = implode(', ', array_map(fn($col) => "`$col` = :$col", array_keys($data)));
         $whereClause = implode(' AND ', array_map(fn($col) => "`$col` = :where_$col", array_keys($where)));
@@ -433,13 +486,13 @@ class BaseTable
         );
 
         $sql = "UPDATE `{$self->table}` SET $setClause WHERE $whereClause";
-        $self->lastQuery = $sql;
-        $self->lastBindings = $bindings;
+        self::$lastQuery = $sql;
+        self::$lastBindings = $bindings;
 
         $stmt = $self->pdo->prepare($sql);
         $stmt->execute($bindings);
         $rwCount = $stmt->rowCount();
-        $self->rowcount = $rwCount;
+        self::$rowcount = $rwCount;
         $stmt->closeCursor();
 
         return $rwCount;
@@ -450,13 +503,13 @@ class BaseTable
         $self = static::instance();
         $whereClause = implode(' AND ', array_map(fn($col) => "`$col` = :$col", array_keys($where)));
         $sql = "DELETE FROM `{$self->table}` WHERE $whereClause";
-        $self->lastQuery = $sql;
-        $self->lastBindings = $where;
+        self::$lastQuery = $sql;
+        self::$lastBindings = $where;
 
         $stmt = $self->pdo->prepare($sql);
         $stmt->execute($where);
         $rwCount = $stmt->rowCount();
-        $self->rowcount = $rwCount;
+        self::$rowcount = $rwCount;
         $stmt->closeCursor();
 
         return $rwCount;
@@ -476,10 +529,10 @@ class BaseTable
     public static function getLastQuery(bool $withBindings = false)
     {
         $self = static::instance();
-        if (!$withBindings) return $self->lastQuery;
+        if (!$withBindings) return self::$lastQuery;
 
-        $query = $self->lastQuery;
-        foreach ($self->lastBindings as $key => $value) {
+        $query = self::$lastQuery;
+        foreach (self::$lastBindings as $key => $value) {
             $pattern = '/:' . preg_quote($key, '/') . '\b/';
             $replacement = is_numeric($value) ? $value : $self->pdo->quote($value);
             $query = preg_replace($pattern, $replacement, $query);
@@ -487,10 +540,33 @@ class BaseTable
         return $query;
     }
 
+    public static function getLastClearQuery(bool $withBindings = false)
+    {
+        $self = static::instance();
+        if (!$withBindings) return self::$lastQuery;
+        $query = self::$lastQuery;
+        uksort(self::$lastBindings, fn($a, $b) => strlen($b) - strlen($a));
+        foreach (self::$lastBindings as $key => $value) {
+            $pattern = '/' . preg_quote($key, '/') . '\b/';
+
+            if (is_numeric($value)) {
+                $replacement = $value;
+            } elseif ($value === null) {
+                $replacement = 'NULL';
+            } else {
+                $replacement = $self->pdo->quote($value);
+            }
+
+            $query = preg_replace($pattern, $replacement, $query);
+        }
+
+        return $query;
+    }
+
     public static function rowCount()
     {
         $self = static::instance();
-        return $self->rowcount ?? 0;
+        return self::$rowcount ?? 0;
     }
 
     public function toArray()

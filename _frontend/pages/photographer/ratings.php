@@ -240,56 +240,7 @@
                     }).join('');
                 }
 
-                function renderReviews(reviews) {
-                    const container = document.getElementById('reviewsList');
-
-                    if (!reviews.length) {
-                        container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">📭</div>
-            <div class="empty-title">No Reviews Found</div>
-            <div class="empty-text">Try adjusting your filters or check back later</div>
-          </div>
-        `;
-                        return;
-                    }
-
-                    container.innerHTML = reviews.slice().reverse().map(r => `
-        <div class="review-card">
-          <div class="review-header">
-            <div class="review-client-info">
-              <div class="review-name">
-                ${r.anon ? '🔒 ' + escapeHtml(r.name) : escapeHtml(r.name)}
-                ${r.anon ? '<span class="anon-badge">Anonymous</span>' : ''}
-              </div>
-              <div class="review-meta">
-                <span class="service-badge">${r.service}</span>
-                <span>📅 ${r.date}</span>
-              </div>
-            </div>
-            <div class="review-stars">${renderStars(r.rating)}</div>
-          </div>
-          <div class="review-text">${escapeHtml(r.text)}</div>
-          ${r.reply ? `
-            <div class="reply-section">
-              <div class="reply-label">✓ Your Reply</div>
-              <div class="reply-text">${escapeHtml(r.reply)}</div>
-            </div>
-          ` : ''}
-          <div class="reply-form">
-            <input 
-              class="reply-input" 
-              placeholder="${r.reply ? 'Update your reply...' : 'Write a thoughtful reply...'}" 
-              value="${r.reply ? escapeHtml(r.reply) : ''}"
-              data-review-id="${r.id}"
-            >
-            <button class="btn btn-primary" onclick="saveReply(${r.id})">
-              ${r.reply ? '🔄 Update' : '💬 Reply'}
-            </button>
-          </div>
-        </div>
-      `).join('');
-                }
+                
 
                 function saveReply(reviewId) {
                     const input = document.querySelector(`input[data-review-id="${reviewId}"]`);
